@@ -12,5 +12,7 @@ classifiers = [
     "Private :: Do Not Upload"
 ]
 version = "0.0.1"
-dependencies = []
+dynamic = ["dependencies"]
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
