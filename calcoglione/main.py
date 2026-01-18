@@ -15,7 +15,7 @@ MENU = {
 
 def print_menu():
     """Prints the menu information as a table."""
-    print(tabulate(MENU.items(), headers=["Input", "Description"], tablefmt=simple))
+    print(tabulate.tabulate(MENU.items(), headers=["Input", "Description"], tablefmt="simple"))
 
 
 def prompt_qa(question:str) -> float:
