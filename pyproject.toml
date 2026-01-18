@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "calcolgione"
+description = "Basic calculations for every day"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming language :: Python :: 3.9",
+    "Private :: Do Not Upload"
+]
+version = "0.0.1"
+dependencies = []
+
