@@ -1,5 +1,6 @@
 {
     "message": "A car travels at {v_car.value} {v_car.unit}. How many kilometers does it cover in {t_car.value} {t_car.unit}?",
+    "answer_type": "numeric",
     "vars": [
         {
             "name": "v_car",
