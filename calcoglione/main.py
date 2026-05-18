@@ -47,6 +47,9 @@ class Question():
         self.vars : list[QVar] = self._read_variables(question["vars"])
         self.result : QVar = self._read_result(question["result"])
 
+        # Post-init processes
+        self.message = self._render_message()
+
     def _read_variables(self, raw_variables:dict) -> list:
         """Read all variabels that occur in a question.
 
@@ -67,6 +70,21 @@ class Question():
         result = QVarResult(raw_result)
         return result
 
+    def _render_message(self):
+        substitutions =  {}
+        
+        # Generate subsitutions prompts for the message string
+        for var in self.vars:
+            substitutions[f"{var.name}.value"] = var.value
+            substitutions[f"{var.name}.unit"] = var.unit
+
+        message = self.message
+
+        for key, val in substitutions.items():
+            message = message.replace("{" + key + "}", str(val))
+        
+        return message
+
     def ask_question(self):
         print(self.message)
         
@@ -82,7 +100,7 @@ def main():
     my_question = Question(question)
     my_question.ask_question()
 
-    my_anser = input("Answer: ")
+    my_anser = 1234 #input("Answer: ")
 
     print(f"My answer: {my_anser}")
     print(f"Correct answer: {my_question.result.value}")
