@@ -2,3 +2,4 @@ build
 setuptools
 tabulate
 twine
+ruff

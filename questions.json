@@ -1,27 +1,32 @@
 {
-    "message": "A car travels at {v_car.value} {v_car.unit}. How many kilometers does it cover in {t_car.value} {t_car.unit}?",
-    "answer_type": "numeric",
-    "vars": [
-        {
-            "name": "v_car",
-            "description": "Velocity of a traveling car.",
-            "type": "velocity",
-            "value": 14,
-            "unit": "km/h"
-        },
-        {
-            "name": "t_car",
-            "description": "Travel-time of the car.",
-            "type": "time",
-            "value": 25,
-            "unit": "min"
-        }
-    ],
-    "result": {
-        "name": "s_car",
-        "type": "distance",
-        "value": 5.833,
+    "question": {
+        "message": "A car travels at {v_car.value} {v_car.unit}. How many kilometers does it cover in {t_car.value} {t_car.unit}?",
+        "vars": [
+            {
+                "name": "v_car",
+                "description": "Velocity of a traveling car.",
+                "type": "velocity",
+                "value": 14,
+                "unit": "km/h"
+            },
+            {
+                "name": "t_car",
+                "description": "Travel-time of the car.",
+                "type": "time",
+                "value": 25,
+                "unit": "min"
+            }
+        ]
+    },
+    "answer": {
+        "answer_type": "numeric",
         "calculation": "{v_car.value} * {t_car.value}",
-        "unit": "km"
+        "result": {
+            "name": "s_car",
+            "description": "Distance of a traveling car.",
+            "type": "distance",
+            "value": 5.833,
+            "unit": "km"
+        }
     }
 }
