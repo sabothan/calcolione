@@ -1,6 +1,7 @@
 import re
 import sys
 import json
+from typing import Optional
 
 
 ALLOWED_SYMBOLS = re.compile(r"^[.,/*a-zA-Z0-9 \-+%°^()]+$")
@@ -22,7 +23,7 @@ class QVar():
             name:str = "",
             description:str = "",
             type:str = "",
-            value:str = "",
+            value:Optional[float] = None,
             unit:str = "",
         ):
         self.name = name
@@ -59,28 +60,27 @@ class QVar():
 class Question():
     """Wrapper class to hold a question and it's information.
     """
-    def __init__(self, question:dict):
-        self.message : str = question["message"]
-        self.vars : list[QVar] = self._read_variables(question["vars"])
+    def __init__(self, message:str, vars:list[QVar]):
+        self.message = message
+        self.vars = vars
 
         # Post-init processes
         self.message = self._render_message()
 
-    def _read_variables(self, raw_variables:dict) -> list:
-        """Read all variabels that occur in a question.
+    @classmethod
+    def from_dict(cls, question:dict):
+        """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
-            raw_variables (dict): the variables
+            question (dict): the input dictionary
 
         Returns:
-            A list of variabels.
+            The instantiated class.
         """
-        variable_list = []
-        for variable in raw_variables:
-            _var = QVar.from_dict(variable)
-            variable_list.append(_var)
-
-        return variable_list
+        return cls(
+            message = question["message"],
+            vars = [QVar.from_dict(var) for var in question["vars"]],
+        )
 
     def _render_message(self):
         substitutions =  {}
@@ -108,16 +108,32 @@ class Question():
         
 
 class Answer():
-    def __init__(self, exercise:dict):
-        self._answer_type = exercise["answer_type"]
-        self._calculation = exercise["calculation"]
-        self.result = QVar(exercise["result"])
+    def __init__(self, answer_type:str, calculation:str, result:QVar):
+        self._answer_type = answer_type
+        self._calculation = calculation
+        self.result = result
 
         # Initialize input variables
         self.my_answer = None
 
         # Post-init processing
         # TODO: implement parsing
+    
+    @classmethod
+    def from_dict(cls, answer:dict):
+        """Serves as an additional constructor, but with input from a `dict`.
+
+        Args:
+            answer (dict): the input dictionary
+
+        Returns:
+            The instantiated class.
+        """
+        return cls(
+            answer_type = answer["answer_type"],
+            calculation = answer["calculation"],
+            result = QVar.from_dict(answer["result"]),
+        )
 
     def _input_answer(self) -> QVar:
         """Prompts the user to input an answer.
@@ -191,15 +207,16 @@ class Answer():
         value_str = match.group(1).replace(",", ".")
         unit_str  = match.group(2).strip()
 
+        # Convert the string numeric into a float
         try:
-            _ = float(value_str)
+            value = float(value_str)
         except ValueError:
             # TODO: handle non numeric values
             return QVar()
 
         # Create an arbitry answer with numeric and value
         parsed_answer = QVar(
-            value=value_str,
+            value=value,
             unit=unit_str,
         )
         return parsed_answer
@@ -213,12 +230,19 @@ class Exercise():
     """Wrapper class for a Question and an Answer.
     Implements downstream methods for user interaction.
     """
-    def __init__(self):
-        # Declare member variables
-        self.question : Question
-        self.answer : Answer
-       
-    def get_exercise(self):
+    def __init__(self, question:Question, answer:Answer):
+        self.question = question
+        self.answer = answer
+
+        # Initialise user prompt answer
+        self.user_answer = Answer(
+            answer_type="",
+            calculation="",
+            result=QVar(),
+        )
+
+    @classmethod
+    def get_exercise_from_json(cls):
         """Read an exercise from a template JSON file.
         The template will be filled with randomised values.
         """
@@ -226,8 +250,10 @@ class Exercise():
             exercise = json.load(file)
 
         # TODO: implement randomising values
-        self.question = Question(exercise["question"])
-        self.answer = Answer(exercise["answer"])
+        return cls(
+            question = Question.from_dict(exercise["question"]),
+            answer = Answer.from_dict(exercise["answer"])
+        )
  
     def display_question(self):
         """Print the question body to the terminal
@@ -237,20 +263,24 @@ class Exercise():
     def input_answer(self):
         """Prompt the user for an answer.
         """
-        self.answer._input_answer()
+        self.user_answer._input_answer()
     
     def evaluate_answer(self):
         """Evaluate the given answer for correctness.
         """
-        pass
+        print(f"Given answer: {self.user_answer.result.value} {self.user_answer.result.unit}")
+        print(f"Correct answer: {self.answer.result.value} {self.answer.result.unit}")
+
+        # TODO: finish evaluation
 
 
 def main():
-    my_exercise = Exercise()
+    my_exercise = Exercise.get_exercise_from_json()
     my_exercise.display_question()
+    my_exercise.input_answer()
+    my_exercise.evaluate_answer()
 
 
 if __name__ == "__main__":
     main()
     sys.exit(0)
-
