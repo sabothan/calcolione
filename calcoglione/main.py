@@ -145,6 +145,8 @@ class Answer:
         # Prompt an answer
         my_answer: str = input("Answer: ")
 
+        # TODO: check input for allowed symbols
+
         # Parse the answer into numeric and unit and pack into QVar
         parsed_answer = self._parse(my_answer)
 
