@@ -6,18 +6,18 @@ from calcolione import ALLOWED_SYMBOLS, NUMERIC_UNIT_PATTERN
 
 class Answer:
     def __init__(self, answer_type: str, calculation: str, result: QVar):
-        self._answer_type = answer_type
-        self._calculation = calculation
-        self.result = result
+        self._answer_type : str = answer_type
+        self._calculation : str = calculation
+        self.result : QVar = result
 
         # Initialize input variables
-        self.my_answer = ""
+        self.my_answer = QVar()
 
         # Post-init processing
         # TODO: implement parsing
 
     @classmethod
-    def from_dict(cls, answer: dict):
+    def from_dict(cls, answer: dict) -> Answer:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
@@ -32,7 +32,7 @@ class Answer:
             result=QVar.from_dict(answer["result"]),
         )
 
-    def _input_answer(self) -> QVar:
+    def _input_answer(self):
         """Prompts the user to input an answer.
         The answer will be parsed into a <numeric, unit> tuple accordingly,
         which will be stored in the QVar object.
@@ -48,7 +48,8 @@ class Answer:
         # Parse the answer into numeric and unit and pack into QVar
         parsed_answer = self._parse(my_answer)
 
-        return parsed_answer
+        # Write the parsed answer to the dedicated variable
+        self.my_answer = parsed_answer
 
     def _parse(self, answer: str) -> QVar:
         """Parses an answer string into a QVar object.

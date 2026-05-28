@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "calcolgione"
 description = "Basic calculations for every day"
 readme = "README.md"
+requires-python = "3.9.*"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Programming language :: Python :: 3.9",
@@ -15,7 +16,7 @@ version = "0.0.1"
 dependencies = [
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "build",
     "setuptools",

@@ -13,13 +13,6 @@ class Exercise:
         self.question = question
         self.answer = answer
 
-        # Initialise user prompt answer
-        self.user_answer = Answer(
-            answer_type="",
-            calculation="",
-            result=QVar(),
-        )
-
     @classmethod
     def get_exercise_from_json(cls):
         """Read an exercise from a template JSON file.
@@ -42,12 +35,12 @@ class Exercise:
 
     def input_answer(self):
         """Prompt the user for an answer."""
-        self.user_answer._input_answer()
+        self.answer._input_answer()
 
     def evaluate_answer(self):
         """Evaluate the given answer for correctness."""
         print(
-            f"Given answer: {self.user_answer.result.value} {self.user_answer.result.unit}"
+            f"Given answer: {self.answer.my_answer.value} {self.answer.my_answer.unit}"
         )
         print(f"Correct answer: {self.answer.result.value} {self.answer.result.unit}")
 
