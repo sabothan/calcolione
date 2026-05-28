@@ -1,6 +1,7 @@
 import re
 
 from calcolione import QVar
+from calcolione import ALLOWED_SYMBOLS, NUMERIC_UNIT_PATTERN
 
 
 class Answer:
@@ -10,7 +11,7 @@ class Answer:
         self.result = result
 
         # Initialize input variables
-        self.my_answer = None
+        self.my_answer = ""
 
         # Post-init processing
         # TODO: implement parsing
@@ -82,17 +83,6 @@ class Answer:
             "9.8"           -> (9.8, "")
             "-3.5 m/s"      -> (-3.5, "m/s")
         """
-        # Regex pattern:
-        # - `^` — start of string
-        # - `([-+]?\d+[.,]?\d*)` — **capture group 1: the number**
-        #   - `[-+]?` — optional sign
-        #   - `\d+` — one or more digits (required)
-        #   - `[.,]?` — optional decimal separator, either `.` or `,`
-        #   - `\d*` — zero or more digits after the separator
-        # - `\s*` — zero or more whitespace between number and unit
-        # - `(.*)` — **capture group 2: the unit**, anything remaining
-        # - `$` - end of string
-        NUMERIC_UNIT_PATTERN = re.compile(r"^([-+]?\d+[.,]?\d*)\s*(.*)$")
         match = NUMERIC_UNIT_PATTERN.match(answer.strip())
 
         # Handle incompatible anwers
