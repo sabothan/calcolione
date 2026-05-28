@@ -1,5 +1,6 @@
 from typing import Optional
 
+
 class QVar:
     """Represents an arbitrary variable. Converts the variable into SI units for further calculations"""
 
@@ -39,4 +40,3 @@ class QVar:
         """This function converts an arbitrary value with arbitrary units into SI units."""
         #  TODO: implement si converting
         pass
-

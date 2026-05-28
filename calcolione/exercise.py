@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from calcolione import Question, Answer, QVar
+from calcolione import Answer, Question, QVar
 
 
 class Exercise:
@@ -27,7 +27,7 @@ class Exercise:
         """
         exercise_file = Path("exercises.json")
         if exercise_file.is_file():
-            with open(exercise_file, "r") as file:
+            with open(exercise_file) as file:
                 exercise = json.load(file)
 
         # TODO: implement randomising values
@@ -52,4 +52,3 @@ class Exercise:
         print(f"Correct answer: {self.answer.result.value} {self.answer.result.unit}")
 
         # TODO: finish evaluation
-

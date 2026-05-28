@@ -2,6 +2,7 @@ import sys
 
 from calcolione import Exercise
 
+
 def main():
     my_exercise = Exercise.get_exercise_from_json()
     my_exercise.display_question()

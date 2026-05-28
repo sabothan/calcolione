@@ -15,17 +15,67 @@ version = "0.0.1"
 dependencies = [
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "build",
     "setuptools",
     "twine",
     "ruff",
+    "mypy",
 ]
-
-
-[project.optional-dependencies]
-extra = []
 
 [project.scripts]
 calcolione = "calcolione:main.main"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors (PEP 8)
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "D",    # pydocstyle (docstring conventions)
+    "ANN",  # flake8-annotations (type annotation enforcement)
+    "UP",   # pyupgrade (modern Python idioms)
+    "B",    # flake8-bugbear (common bugs/design issues)
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking (TYPE_CHECKING guard suggestions)
+]
+ignore = [
+    "D105",   # missing docstring in magic method — usually noise
+    "D107",   # missing docstring in __init__ — document on class instead
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # enforces Google docstring style
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "ANN",  # don't enforce annotations in tests
+    "D",    # don't enforce docstrings in tests
+]
+"scripts/**" = ["D", "ANN"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true  # formats code blocks inside docstrings too
+
+[tool.mypy]
+python_version         = "3.11"
+strict                 = true   # enables the full PEP 484 strict mode bundle
+warn_return_any        = true
+warn_unused_ignores    = true
+warn_unreachable       = true
+disallow_untyped_defs  = true
+disallow_any_generics  = true
+no_implicit_reexport   = true
+
+# per-module overrides for third-party libs with missing stubs
+[[tool.mypy.overrides]]
+module = ["some_lib.*", "another_untyped_lib.*"]
+ignore_missing_imports = true

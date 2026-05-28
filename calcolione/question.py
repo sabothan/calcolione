@@ -54,4 +54,3 @@ class Question:
             str: the question message
         """
         return self.message
-

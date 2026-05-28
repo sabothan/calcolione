@@ -74,8 +74,7 @@ class Answer:
         return parsed_answer
 
     def _parse_numeric(self, answer) -> QVar:
-        """
-        Parses a numeric answer string into a value and an optional unit.
+        """Parses a numeric answer string into a value and an optional unit.
         Expected format: <number> <unit>
         Examples:
             "5.833 km"      -> (5.833, "km")
@@ -122,4 +121,3 @@ class Answer:
     def _parse_expression(self, answer) -> QVar:
         # TODO: implement scientific expressions
         return QVar()
-
