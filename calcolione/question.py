@@ -12,21 +12,26 @@ class Question:
         self.message = self._render_message()
 
     @classmethod
-    def from_dict(cls, question: dict):
+    def from_dict(cls, question: dict) -> Question:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
             question (dict): the input dictionary
 
         Returns:
-            The instantiated class.
+            Question: The instantiated class.
         """
         return cls(
             message=question["message"],
             vars=[QVar.from_dict(var) for var in question["vars"]],
         )
 
-    def _render_message(self):
+    def _render_message(self) -> str:
+        """Substitutes the actual values for the placeholders in a question's body.
+
+        Returns:
+            str: The message body with substituted placeholders.
+        """
         substitutions = {}
 
         # Generate subsitutions prompts for the message string
