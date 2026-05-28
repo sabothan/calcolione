@@ -12,7 +12,20 @@ classifiers = [
     "Private :: Do Not Upload"
 ]
 version = "0.0.1"
-dynamic = ["dependencies"]
+dependencies = [
+]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+[dependency-groups]
+dev = [
+    "build",
+    "setuptools",
+    "twine",
+    "ruff",
+]
+
+
+[project.optional-dependencies]
+extra = []
+
+[project.scripts]
+calcolione = "calcolione:main.main"
