@@ -99,8 +99,7 @@ class QVar:
         )
 
     def _convert_to_si_units(self) -> None:
-        """This function converts an arbitrary value with arbitrary units into SI units.
-        """
+        """This function converts an arbitrary value with arbitrary units into SI units."""
         #  TODO: implement si converting
         pass
 

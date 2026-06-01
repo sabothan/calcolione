@@ -39,7 +39,8 @@ However the other special methods such as `__add__`, `__sub__`, `__eq__` do requ
 When a classmethod returns an instance of its own class, use `Self` from `typing_extensions` (Python < 3.11) or `typing` (Python ≥ 3.11):
 
 ```python
-from __future__ import annotations  # required on Python 3.9 to defer annotation evaluation
+# annotations are required on Python 3.9 to defer annotation evaluation
+from __future__ import annotations 
 from typing_extensions import Self
 
 class MyClass:

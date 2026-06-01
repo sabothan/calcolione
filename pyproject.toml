@@ -52,7 +52,6 @@ ignore = [
     "D104",     # missing docstring in package
     "D105",     # missing docstring in magic method — usually noise
     "D107",     # missing docstring in __init__ — document on class instead
-    "D200",     # One-line docstring should fit on one line
     "D205",     # docstring summary lines that are not separated from the docstring description by one blank line
     "ANN204",   # issing return type annotation for special methods (e.g. __init__, __new__, __call__)
 ]

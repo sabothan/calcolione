@@ -5,8 +5,8 @@ from calcolione.utils import ANSWER_TOLERANCE, NUMERIC_UNIT_PATTERN
 
 
 class Answer:
-    """Represents an answer object.
-    """
+    """Represents an answer object."""
+
     def __init__(self, answer_type: str, calculation: str, result: QVar):
         self._answer_type: str = answer_type
         self._calculation: str = calculation
@@ -115,7 +115,7 @@ class Answer:
         )
         return parsed_answer
 
-    def _parse_expression(self, answer:str) -> QVar:
+    def _parse_expression(self, answer: str) -> QVar:
         """Parses a scientific expression into a value with optional units.
 
         Args:
@@ -137,8 +137,7 @@ class Answer:
         given_answer: QVar = self.my_answer
         correct_answer: QVar = self.result
         # TODO: implement comparison of QVar to raw tolerance
-        if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
-           pass
+        if abs(given_answer - correct_answer) <= ANSWER_TOLERANCE:
+            return True
         else:
-           pass
-
+            return False

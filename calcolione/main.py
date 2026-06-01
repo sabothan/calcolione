@@ -4,8 +4,7 @@ from calcolione.exercise import Exercise
 
 
 def main() -> int:
-    """Start the main process.
-    """
+    """Start the main process."""
     my_exercise = Exercise.get_exercise_from_json()
     my_exercise.display_question()
     my_exercise.input_answer()
