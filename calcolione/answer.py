@@ -1,7 +1,7 @@
 import re
 
-from calcolione import QVar
-from calcolione import ALLOWED_SYMBOLS, NUMERIC_UNIT_PATTERN
+from calcolione.qvar import QVar
+from calcolione.utils import ALLOWED_SYMBOLS, NUMERIC_UNIT_PATTERN
 
 
 class Answer:
@@ -13,9 +13,6 @@ class Answer:
         # Initialize input variables
         self.my_answer = QVar()
 
-        # Post-init processing
-        # TODO: implement parsing
-
     @classmethod
     def from_dict(cls, answer: dict) -> Answer:
         """Serves as an additional constructor, but with input from a `dict`.
@@ -26,6 +23,7 @@ class Answer:
         Returns:
             The instantiated class.
         """
+        # TODO: implement calculation of the correct answer from variables. Probably implement in `Exercise`?
         return cls(
             answer_type=answer["answer_type"],
             calculation=answer["calculation"],
@@ -112,3 +110,7 @@ class Answer:
     def _parse_expression(self, answer) -> QVar:
         # TODO: implement scientific expressions
         return QVar()
+
+    def evaluate_answer(self, answer):
+        given_answer = self.my_answer
+        correct_answer = self.result

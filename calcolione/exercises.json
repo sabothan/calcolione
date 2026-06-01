@@ -1,4 +1,9 @@
 {
+    "units": {
+        "velocity": [],
+        "distance": [],
+        "time": []
+    },
     "question": {
         "message": "A car travels at {v_car.value} {v_car.unit}. How many kilometers does it cover in {t_car.value} {t_car.unit}?",
         "vars": [

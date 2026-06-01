@@ -15,3 +15,6 @@ ALLOWED_SYMBOLS = re.compile(r"^[.,/*a-zA-Z0-9 \-+%°^()]+$")
 # - `(.*)` — **capture group 2: the unit**, anything remaining
 # - `$` - end of string
 NUMERIC_UNIT_PATTERN = re.compile(r"^([-+]?\d+[.,]?\d*)\s*(.*)$")
+
+# Tolerance to evaluate a given answer its correctness
+ANSWER_TOLERANCE = 0.01

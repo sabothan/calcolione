@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
-from calcolione import Answer, Question, QVar
+from calcolione.answer import Answer
+from calcolione.question import Question
+from calcolione.qvar import QVar
 
 
 class Exercise:
