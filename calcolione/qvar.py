@@ -1,5 +1,7 @@
 from typing import Optional
 
+from calcolione.utils import UNIT_REGISTRY as unit
+
 
 class QVar:
     """Represents an arbitrary variable. Converts the variable into SI units for further calculations"""
@@ -17,6 +19,38 @@ class QVar:
         self.type = type
         self.value = value
         self.unit = unit
+
+    def __add__(self, other):
+        # TODO: implement qvar additon
+        pass
+    
+    def __sub__(self, other):
+        # TODO: implement qvar subtraction
+        pass
+
+    def __eq__(self, other):
+        # TODO: implement qvar equality
+        pass
+
+    def __lt__(self, other):
+        # TODO: implement qvar less than
+        pass
+
+    def __le__(self, other):
+        # TODO impelement qvar less equan than
+        pass
+
+    def __gt__(self, other):
+        # TODO: implement qvar greater than
+        pass
+
+    def __ge__(self, other):
+        # TODO: implement qvar greater equal than
+        pass
+
+    def __ne__(self, other):
+        # TODO: implement qvar not equal to
+        pass
 
     @classmethod
     def from_dict(cls, variable: dict):
