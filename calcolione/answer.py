@@ -120,7 +120,7 @@ class Answer:
     def evaluate_answer(self, answer):
         given_answer:QVar = self.my_answer
         correct_answer:QVar = self.result
-        if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
-            pass
-        else:
-            pass
+        #if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
+        #    pass
+        #else:
+        #    pass
