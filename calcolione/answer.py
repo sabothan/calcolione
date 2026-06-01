@@ -1,5 +1,5 @@
 import re
-from typing_extensions import Self # PEP 673: The Self type annotation is also useful for classmethods that return an instance of the class that they operate on.
+from typing_extensions import Self # PEP 673
 
 from calcolione.qvar import QVar
 from calcolione.utils import (
