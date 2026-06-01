@@ -1,7 +1,11 @@
 import re
 
 from calcolione.qvar import QVar
-from calcolione.utils import ALLOWED_SYMBOLS, NUMERIC_UNIT_PATTERN
+from calcolione.utils import (
+    ALLOWED_SYMBOLS,
+    NUMERIC_UNIT_PATTERN,
+    ANSWER_TOLERANCE
+)
 
 
 class Answer:
@@ -14,7 +18,7 @@ class Answer:
         self.my_answer = QVar()
 
     @classmethod
-    def from_dict(cls, answer: dict) -> Answer:
+    def from_dict(cls, answer: dict):
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
@@ -112,5 +116,9 @@ class Answer:
         return QVar()
 
     def evaluate_answer(self, answer):
-        given_answer = self.my_answer
-        correct_answer = self.result
+        given_answer:QVar = self.my_answer
+        correct_answer:QVar = self.result
+        if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
+            pass
+        else:
+            pass

@@ -2,7 +2,6 @@ from typing import Optional
 
 from calcolione.utils import UNIT_REGISTRY as unit
 
-
 class QVar:
     """Represents an arbitrary variable. Converts the variable into SI units for further calculations"""
 
@@ -20,12 +19,34 @@ class QVar:
         self.value = value
         self.unit = unit
 
+        # TODO: add check whether the given unit is supported by pint.UnitRegistry
+
     def __add__(self, other):
         # TODO: implement qvar additon
         pass
     
     def __sub__(self, other):
         # TODO: implement qvar subtraction
+        pass
+
+    def __mul__(self, other):
+        # TODO: implement qvar multiplication
+        pass
+
+    def __truediv__(self, other):
+        # TODO: implement qvar division (true)
+        pass
+
+    def __floordiv__(self, other):
+        # TODO: implement qvar floor division
+        pass
+
+    def __mod__(self, other):
+        # TODO: implement qvar modulo
+        pass
+
+    def __pow__(self, other):
+        # TODO: implement qvar power operations
         pass
 
     def __eq__(self, other):
@@ -74,3 +95,6 @@ class QVar:
         """This function converts an arbitrary value with arbitrary units into SI units."""
         #  TODO: implement si converting
         pass
+
+unit.Quantity(14, "km/h").to_base_units()  # should give m/s
+unit.Quantity(25, "min").to_base_units()   # should give seconds

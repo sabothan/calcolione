@@ -1,4 +1,4 @@
-from calcolione import QVar
+from calcolione.qvar import QVar
 
 
 class Question:
@@ -12,7 +12,7 @@ class Question:
         self.message = self._render_message()
 
     @classmethod
-    def from_dict(cls, question: dict) -> Question:
+    def from_dict(cls, question: dict):
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
