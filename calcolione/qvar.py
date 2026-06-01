@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pint import UnitRegistry
+from pint import UnitRegistry, Quantity
 from typing_extensions import Self  # PEP 673
 
 # Define the unit registry
@@ -17,14 +17,15 @@ class QVar:
         name: str = "",
         description: str = "",
         type: str = "",
-        value: float | None = None,
-        unit: str = "",
+        raw_value: str = "",
     ):
         self.name = name
         self.description = description
         self.type = type
-        self.value = value
-        self.unit = unit
+        self._raw_value = raw_value
+        
+        # Post init processing of value
+        self.quantity = Quantity(self._raw_value)
 
         # TODO: add check whether the given unit is supported by pint.UnitRegistry
 
@@ -94,8 +95,7 @@ class QVar:
             name=variable["name"],
             description=variable["description"],
             type=variable["type"],
-            value=variable["value"],
-            unit=variable["unit"],
+            raw_value=variable["value"],
         )
 
     def _convert_to_si_units(self) -> None:
@@ -104,6 +104,17 @@ class QVar:
         pass
 
 
-print(unit.Quantity(14, "km/h").to_base_units())  # should give m/s
-print(unit.Quantity(25, "min").to_base_units())  # should give seconds
+var1 = unit.Quantity(1, "km/h").to_base_units() # should give m/s
+var2 = unit.Quantity(1, "m/s").to_base_units()  # should give seconds
 
+print(var1.dimensionality)
+print(var2.dimensionality)
+
+print(var1.to_base_units())
+print(var2.to_base_units())
+
+result:Quantity = var1 + var2
+print(result)
+print(result.to("km/h"))
+
+print(unit.Quantity("1km/h + 1m/s"))

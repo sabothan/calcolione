@@ -34,7 +34,7 @@ class Answer:
 
     def _input_answer(self) -> None:
         """Prompts the user to input an answer.
-        The answer will be parsed into a <numeric, unit> tuple accordingly,
+        The answer will be parsed into a pint.Quantity(numeric, unit) object,
         which will be stored in the the class's `self.my_answer`.
         """
         # Prompt an answer
@@ -50,7 +50,7 @@ class Answer:
 
     def _parse(self, answer: str) -> QVar:
         """Parses an answer string into a QVar object.
-        The string is split into a tuple <numeric, unit> accordingly and
+        The string is split into a tuple pint.Quantity(numeric, unit) and
         packed into the QVar object.
 
         Args:
@@ -97,22 +97,14 @@ class Answer:
             # TODO: handle incompatible formats
             return QVar()
 
-        # Split up answer into numeric and unit
-        value_str = match.group(1).replace(",", ".")
-        unit_str = match.group(2).strip()
-
-        # Convert the string numeric into a float
-        try:
-            value = float(value_str)
-        except ValueError:
-            # TODO: handle non numeric values
-            return QVar()
-
-        # Create an arbitry answer with numeric and value
+        # Convert the input string into a QVar
         parsed_answer = QVar(
-            value=value,
-            unit=unit_str,
+            name="Result",
+            description="Answer, given by the user",
+            type="",
+            raw_value=answer,
         )
+
         return parsed_answer
 
     def _parse_expression(self, answer: str) -> QVar:
