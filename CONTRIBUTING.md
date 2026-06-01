@@ -18,6 +18,12 @@ This project uses `ruff` to enfore this automatically.
 
 All public and private functions and methods must have type annotations on parameters and return types.
 
+```python
+def get_character_introduction(name: str, age: int) -> str:
+    msg = f"Hello, my name is {name} and I am {age} years old!"
+    return msg
+```
+
 #### Forward References and `Self` (PEP 673)
 
 When a classmethod returns an instance of its own class, use `Self` from `typing_extensions` (Python < 3.11) or `typing` (Python ≥ 3.11):
