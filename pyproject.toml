@@ -5,6 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "calcolgione"
 description = "Basic calculations for every day"
+authors = [
+    {name = "sabothan"},
+]
+maintainers = [
+    {name = "sabothan"},
+]
 readme = "README.md"
 requires-python = "==3.9.*"
 classifiers = [

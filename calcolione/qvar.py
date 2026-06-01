@@ -104,5 +104,6 @@ class QVar:
         pass
 
 
-unit.Quantity(14, "km/h").to_base_units()  # should give m/s
-unit.Quantity(25, "min").to_base_units()  # should give seconds
+print(unit.Quantity(14, "km/h").to_base_units())  # should give m/s
+print(unit.Quantity(25, "min").to_base_units())  # should give seconds
+

@@ -7,6 +7,13 @@ A method to exercise daily occurring physics and maths problems to train your mi
 At the moment, as this project is not available as a binary or built package,
 it can only be build and installed locally.
 
+First clone this repository and `cd` into the project folder:
+
+```bash
+git clone https://github.com/sabothan/calcolione.git
+cd calcolione
+```
+
 The project can be easily installed using `pip` and `conda`.
 If you don't have installed the package and environment manager `conda` yet,
 follow the [`miniconda Installation Guide`](https://www.anaconda.com/docs/getting-started/miniconda/install/overview).
@@ -39,7 +46,7 @@ If you are a developer, you may install the project in editable mode and include
 dependencies:
 
 ```bash
-pip install -e --group dev
+pip install -e . --group dev
 ```
 
 **Note:**
