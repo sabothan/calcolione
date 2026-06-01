@@ -44,3 +44,5 @@ pip install -e --group dev
 
 **Note:**
 the feature of dependency-groups for `pip` is only available for version `pip>=25.1`.
+
+In order to contribute to this project please refer to the [`CONTRIBUTING.md`](./CONTRIBUTING.md).
