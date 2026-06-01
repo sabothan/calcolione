@@ -1,10 +1,11 @@
-from typing_extensions import Self # PEP 673
+from typing_extensions import Self  # PEP 673
 
 from calcolione.qvar import QVar
 
 
 class Question:
-    """Wrapper class to hold a question and it's information."""
+    """Wrapper class to hold a question and it's information.
+    """
 
     def __init__(self, message: str, vars: list[QVar]):
         self.message = message

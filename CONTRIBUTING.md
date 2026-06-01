@@ -23,11 +23,23 @@ def get_character_introduction(name: str, age: int) -> str:
     return f"Hello, my name is {name} and I am {age} years old!"
 ```
 
+**Exception:**
+
+The Python special methods such as:
+
+- `__init__`
+- `__new__`
+- `__call__`
+
+are not required to have **return type annotations**.
+However the other special methods such as `__add__`, `__sub__`, `__eq__` do require return type annotations.
+
 #### Forward References and `Self` (PEP 673)
 
 When a classmethod returns an instance of its own class, use `Self` from `typing_extensions` (Python < 3.11) or `typing` (Python ≥ 3.11):
 
 ```python
+from __future__ import annotations  # required on Python 3.9 to defer annotation evaluation
 from typing_extensions import Self
 
 class MyClass:
@@ -37,6 +49,8 @@ class MyClass:
     @classmethod
     def construct_from_dict(cls, data: dict) -> Self:
         return cls(my_var=data["value"])
+    
+    def __add__(self, other:MyClass):
         ...
 ```
 
@@ -45,6 +59,13 @@ class MyClass:
 > The `Self` type annotation is also useful for classmethods that return an instance of the class that they operate on.
 
 See [PEP 673](https://peps.python.org/pep-0673/) for the full specification.
+
+### Type Checking with `mypy`
+
+Ruff (`ANN` rules) only checks that annotations exist.
+`mypy` verifies that they are correct — catching type mismatches, wrong return types, and incompatible arguments at static analysis time.
+This project runs mypy in strict mode (`strict = true` in `pyproject.toml`), which enables the full PEP 484 strict bundle.
+All code must pass mypy without errors before merging.
 
 ## Docstrings
 
@@ -71,3 +92,15 @@ Rules:
 - Leave one blank line before `Args`, `Returns`, and `Raises` sections.
 - Omit sections that do not apply.
 - Private methods (prefixed `_`) may omit docstrings if their purpose is obvious from context, but public API must always have them.
+
+## Running Code Checks
+
+Run the following commands from the project root before committing, in this order:
+
+```bash
+ruff format .       # reformat code
+ruff check [--fix]  # lint
+mypy .              # type-check
+```
+
+Order matters: format before lint, otherwise ruff check may flag issues the formatter would have resolved.

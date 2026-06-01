@@ -1,19 +1,16 @@
-import re
-from typing_extensions import Self # PEP 673
+from typing_extensions import Self  # PEP 673
 
 from calcolione.qvar import QVar
-from calcolione.utils import (
-    ALLOWED_SYMBOLS,
-    NUMERIC_UNIT_PATTERN,
-    ANSWER_TOLERANCE
-)
+from calcolione.utils import ANSWER_TOLERANCE, NUMERIC_UNIT_PATTERN
 
 
 class Answer:
+    """Represents an answer object.
+    """
     def __init__(self, answer_type: str, calculation: str, result: QVar):
-        self._answer_type : str = answer_type
-        self._calculation : str = calculation
-        self.result : QVar = result
+        self._answer_type: str = answer_type
+        self._calculation: str = calculation
+        self.result: QVar = result
 
         # Initialize input variables
         self.my_answer = QVar()
@@ -28,21 +25,17 @@ class Answer:
         Returns:
             Answer: The instantiated class.
         """
-
-        # TODO: implement calculation of the correct answer from variables. Probably implement in `Exercise`?
+        # TODO: implement calculation of the correct answer from json variables?
         return cls(
             answer_type=answer["answer_type"],
             calculation=answer["calculation"],
             result=QVar.from_dict(answer["result"]),
         )
 
-    def _input_answer(self):
+    def _input_answer(self) -> None:
         """Prompts the user to input an answer.
         The answer will be parsed into a <numeric, unit> tuple accordingly,
-        which will be stored in the QVar object.
-
-        Returns:
-            QVar: a variable object containing the provided answer
+        which will be stored in the the class's `self.my_answer`.
         """
         # Prompt an answer
         my_answer: str = input("Answer: ")
@@ -64,7 +57,9 @@ class Answer:
             answer (str): The answer provided by the user.
 
         Raises:
-            NotImplementedError: To future proof this method for possible scientific expressions, a not implemented error will be raised.
+            NotImplementedError:    To future proof this for possible scientific
+                                    expressions, a not implemented error will
+                                    be raised.
 
         Returns:
             QVar: The parsed answer
@@ -79,9 +74,16 @@ class Answer:
 
         return parsed_answer
 
-    def _parse_numeric(self, answer) -> QVar:
+    def _parse_numeric(self, answer: str) -> QVar:
         """Parses a numeric answer string into a value and an optional unit.
-        Expected format: <number> <unit>
+        (expected format: <number> <unit>).
+
+        Arguments:
+            answer (str): an answer string consisting of a numeric and a unit
+
+        Returns:
+            QVar: The answer, parsed into a numeric and a unit part
+
         Examples:
             "5.833 km"      -> (5.833, "km")
             "110 km/h"      -> (110.0, "km/h")
@@ -113,14 +115,30 @@ class Answer:
         )
         return parsed_answer
 
-    def _parse_expression(self, answer) -> QVar:
+    def _parse_expression(self, answer:str) -> QVar:
+        """Parses a scientific expression into a value with optional units.
+
+        Args:
+            answer (str): The answer string
+
+        Returns:
+            QVar: The answer parsed into an object
+        """
         # TODO: implement scientific expressions
         return QVar()
 
-    def evaluate_answer(self, answer):
-        given_answer:QVar = self.my_answer
-        correct_answer:QVar = self.result
-        #if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
-        #    pass
-        #else:
-        #    pass
+    def evaluate_answer(self) -> bool:
+        """Evaluates the answer given by the user for correctness.
+        As metric for the correctness a tolerance value is applied.
+
+        Returns:
+            bool: True if correct, False otherwise
+        """
+        given_answer: QVar = self.my_answer
+        correct_answer: QVar = self.result
+        # TODO: implement comparison of QVar to raw tolerance
+        if(abs(given_answer - correct_answer) <= ANSWER_TOLERANCE):
+           pass
+        else:
+           pass
+

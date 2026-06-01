@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
-from typing_extensions import Self # PEP 673
+
+from typing_extensions import Self  # PEP 673
 
 from calcolione.answer import Answer
 from calcolione.question import Question
-from calcolione.qvar import QVar
 
 
 class Exercise:
@@ -32,15 +32,15 @@ class Exercise:
             answer=Answer.from_dict(exercise["answer"]),
         )
 
-    def display_question(self):
-        """Print the question body to the terminal"""
+    def display_question(self) -> None:
+        """Print the question body to the terminal."""
         print(self.question._get_question())
 
-    def input_answer(self):
+    def input_answer(self) -> None:
         """Prompt the user for an answer."""
         self.answer._input_answer()
 
-    def evaluate_answer(self):
+    def evaluate_answer(self) -> None:
         """Evaluate the given answer for correctness."""
         print(
             f"Given answer: {self.answer.my_answer.value} {self.answer.my_answer.unit}"
