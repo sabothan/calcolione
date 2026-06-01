@@ -68,7 +68,7 @@ indent-style = "space"
 docstring-code-format = true  # formats code blocks inside docstrings too
 
 [tool.mypy]
-python_version         = "3.11"
+python_version         = "3.9"
 strict                 = true   # enables the full PEP 484 strict mode bundle
 warn_return_any        = true
 warn_unused_ignores    = true

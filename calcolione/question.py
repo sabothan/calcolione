@@ -1,3 +1,5 @@
+from typing_extensions import Self # PEP 673: The Self type annotation is also useful for classmethods that return an instance of the class that they operate on.
+
 from calcolione.qvar import QVar
 
 
@@ -12,7 +14,7 @@ class Question:
         self.message = self._render_message()
 
     @classmethod
-    def from_dict(cls, question: dict):
+    def from_dict(cls, question: dict) -> Self:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:

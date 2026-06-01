@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing_extensions import Self # PEP 673: The Self type annotation is also useful for classmethods that return an instance of the class that they operate on.
 
 from calcolione.answer import Answer
 from calcolione.question import Question
@@ -16,7 +17,7 @@ class Exercise:
         self.answer = answer
 
     @classmethod
-    def get_exercise_from_json(cls):
+    def get_exercise_from_json(cls) -> Self:
         """Read an exercise from a template JSON file.
         The template will be filled with randomised values.
         """

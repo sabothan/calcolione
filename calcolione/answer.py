@@ -1,4 +1,5 @@
 import re
+from typing_extensions import Self # PEP 673: The Self type annotation is also useful for classmethods that return an instance of the class that they operate on.
 
 from calcolione.qvar import QVar
 from calcolione.utils import (
@@ -18,15 +19,16 @@ class Answer:
         self.my_answer = QVar()
 
     @classmethod
-    def from_dict(cls, answer: dict):
+    def from_dict(cls, answer: dict) -> Self:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
             answer (dict): the input dictionary
 
         Returns:
-            The instantiated class.
+            Answer: The instantiated class.
         """
+
         # TODO: implement calculation of the correct answer from variables. Probably implement in `Exercise`?
         return cls(
             answer_type=answer["answer_type"],

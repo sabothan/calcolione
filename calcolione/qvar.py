@@ -1,4 +1,5 @@
 from typing import Optional
+from typing_extensions import Self # PEP 673: The Self type annotation is also useful for classmethods that return an instance of the class that they operate on.
 
 from calcolione.utils import UNIT_REGISTRY as unit
 
@@ -74,7 +75,7 @@ class QVar:
         pass
 
     @classmethod
-    def from_dict(cls, variable: dict):
+    def from_dict(cls, variable: dict) -> Self:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
