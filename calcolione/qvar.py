@@ -73,6 +73,7 @@ class QVar:
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __mul__(self, other: QVar):
+        # TODO: implement qvar multiplication
         result = self.quantity * other.quantity
 
     def __truediv__(self, other: QVar):
