@@ -101,7 +101,7 @@ class Answer:
         parsed_answer = QVar(
             name="Result",
             description="Answer, given by the user",
-            type="",
+            quantity_type="",
             raw_value=answer,
         )
 

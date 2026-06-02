@@ -5,13 +5,13 @@
             {
                 "name": "v_car",
                 "description": "Velocity of a traveling car.",
-                "type": "velocity",
+                "quantity_type": "velocity",
                 "value": "14 km/h"
             },
             {
                 "name": "t_car",
                 "description": "Travel-time of the car.",
-                "type": "time",
+                "quantity_type": "time",
                 "value": "25 min"
             }
         ]
@@ -22,7 +22,7 @@
         "result": {
             "name": "s_car",
             "description": "Distance of a traveling car.",
-            "type": "distance",
+            "quantity_type": "distance",
             "value": ""
         }
     }

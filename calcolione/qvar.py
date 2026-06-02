@@ -7,39 +7,73 @@ from typing_extensions import Self  # PEP 673
 unit = UnitRegistry()
 
 
+# QVar specific decorator for magic methods __add__ and __sub__
+def require_same_quantity_type(f):
+    def wrapper(self:QVar, other:QVar):
+        if not isinstance(other, QVar):
+            raise TypeError(f"Unsupported operant type: {type(other)}")
+
+        if self.quantity_type != other.quantity_type:
+            raise TypeError(
+                f"Type mismatch: cannot operate on '{self.quantity_type}' and '{other.quantity_type}'"
+            )
+        
+        if self.quantity.is_compatible_with(other.quantity):
+            raise TypeError(
+                f"Type mismatch: cannot operate on '{self.quantity.dimensionality}' and '{other.quantity.dimensionality}"
+            )
+
+        return f(self, other)
+    return wrapper
+
+
 class QVar:
     """Represents an arbitrary variable.
-    Converts the variable into SI units for further calculations.
+    Optionally converts the variable into SI units for further calculations.
+
+    Args:
+        name (str): The variable name.
+        description (str): The variable description.
+        quantity_type (str): The variable quantity_type.
+        raw_value (str): The raw numeric-unit expression.
+
+    Attributes:
+        quantity (pint.Quantity): A numeric-unit tuple, parsed as an object.
+        _raw_value (str): The raw numeric-unit expression.
+    
+    Methods:
+        from_dict: Construct a QVar from an input dictionary.
+        _convert_to_si_units(): Convert the quantity into base SI units.
     """
 
     def __init__(
         self,
         name: str = "",
         description: str = "",
-        type: str = "",
+        quantity_type: str = "",
         raw_value: str = "",
     ):
         self.name = name
         self.description = description
-        self.type = type
+        self.quantity_type = quantity_type
         self._raw_value = raw_value
         
         # Post init processing of value
+        # TODO: add check whether the given unit is supported by pint.UnitRegistry
         self.quantity = Quantity(self._raw_value)
 
-        # TODO: add check whether the given unit is supported by pint.UnitRegistry
-
+    @require_same_quantity_type
     def __add__(self, other: QVar):
-        # TODO: implement qvar additon
-        pass
+        result = self.quantity + other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
+    @require_same_quantity_type
     def __sub__(self, other: QVar):
-        # TODO: implement qvar subtraction
-        pass
+        result = self.quantity - other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __mul__(self, other: QVar):
-        # TODO: implement qvar multiplication
-        pass
+        result = self.quantity * other.quantity
 
     def __truediv__(self, other: QVar):
         # TODO: implement qvar division (true)
@@ -89,12 +123,12 @@ class QVar:
             variable (dict): the input dictionary
 
         Returns:
-            The instantiated class.
+            QVar: The instantiated class.
         """
         return cls(
             name=variable["name"],
             description=variable["description"],
-            type=variable["type"],
+            quantity_type=variable["quantity_type"],
             raw_value=variable["value"],
         )
 
@@ -102,19 +136,3 @@ class QVar:
         """This function converts an arbitrary value with arbitrary units into SI units."""
         #  TODO: implement si converting
         pass
-
-
-var1 = unit.Quantity(1, "km/h").to_base_units() # should give m/s
-var2 = unit.Quantity(1, "m/s").to_base_units()  # should give seconds
-
-print(var1.dimensionality)
-print(var2.dimensionality)
-
-print(var1.to_base_units())
-print(var2.to_base_units())
-
-result:Quantity = var1 + var2
-print(result)
-print(result.to("km/h"))
-
-print(unit.Quantity("1km/h + 1m/s"))
