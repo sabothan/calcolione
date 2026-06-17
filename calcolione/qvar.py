@@ -7,7 +7,14 @@ from typing_extensions import Self  # PEP 673
 unit = UnitRegistry()
 
 
-# QVar specific decorator for magic methods __add__ and __sub__
+# QVar specific decorator for magic methods:
+#   __add__
+#   __sub__
+#   __eq__
+#   __le__
+#   __lt__
+#   __ge__
+#   __gt__
 def require_same_quantity_type(f):
     def wrapper(self:QVar, other:QVar):
         if not isinstance(other, QVar):
@@ -18,7 +25,7 @@ def require_same_quantity_type(f):
                 f"Type mismatch: cannot operate on '{self.quantity_type}' and '{other.quantity_type}'"
             )
         
-        if self.quantity.is_compatible_with(other.quantity):
+        if not self.quantity.is_compatible_with(other.quantity):
             raise TypeError(
                 f"Type mismatch: cannot operate on '{self.quantity.dimensionality}' and '{other.quantity.dimensionality}"
             )
@@ -75,31 +82,35 @@ class QVar:
 
     def __mul__(self, other: QVar):
         result = self.quantity * other.quantity
-        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
+        result_type = f"{self.quantity_type} * {other.quantity_type}"
+        return QVar(quantity_type=result_type, raw_value=str(result))
 
     def __truediv__(self, other: QVar):
         result = self.quantity / other.quantity
-        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
+        result_type = f"{self.quantity_type} / {other.quantity_type}"
+        return QVar(quantity_type=result_type, raw_value=str(result))
 
     def __floordiv__(self, other: QVar):
         result = self.quantity // other.quantity
-        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
+        result_type = f"{self.quantity_type} / {other.quantity_type}"
+        return QVar(quantity_type=result_type, raw_value=str(result))
 
     def __mod__(self, other: QVar):
         result = self.quantity % other.quantity
-        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
+        result_type = f"{self.quantity_type} / {other.quantity_type}"
+        return QVar(quantity_type=result_type, raw_value=str(result))
 
     def __eq__(self, other: QVar):
         result = self.quantity == other.quantity
         return result
 
     def __lt__(self, other: QVar):
-        # TODO: implement qvar less than
-        pass
+        result = self.quantity < other.quantity
+        return result
 
     def __le__(self, other: QVar):
-        # TODO impelement qvar less equan than
-        pass
+        result = self.quantity <= other.quantity
+        return result
 
     def __gt__(self, other: QVar):
         # TODO: implement qvar greater than
@@ -134,3 +145,5 @@ class QVar:
         """This function converts an arbitrary value with arbitrary units into SI units."""
         #  TODO: implement si converting
         pass
+
+
