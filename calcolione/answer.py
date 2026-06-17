@@ -2,7 +2,11 @@ from __future__ import annotations
 from typing_extensions import Self  # PEP 673
 
 from calcolione.qvar import QVar
-from calcolione.utils import ANSWER_TOLERANCE, NUMERIC_UNIT_PATTERN
+from calcolione.utils import (
+    ANSWER_TOLERANCE,
+    NUMERIC_UNIT_PATTERN,
+    ALLOWED_SYMBOLS
+)
 
 
 class Answer:

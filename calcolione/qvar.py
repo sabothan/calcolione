@@ -3,8 +3,11 @@ from __future__ import annotations
 from pint import UnitRegistry, Quantity
 from typing_extensions import Self  # PEP 673
 
+from .utils import QUANTITY_FORMAT_SPECIFIER
+
 # Define the unit registry
 unit = UnitRegistry()
+unit.formatter.default_format = QUANTITY_FORMAT_SPECIFIER # only formats pint-specific quantities
 
 
 # QVar specific decorator for magic methods:
@@ -70,6 +73,10 @@ class QVar:
         # Maybe initialise as a NaN until raw_value is specified? (see answer calculation in answer.py)
         self.quantity = Quantity(self._raw_value)
 
+    def __str__(self):
+        # Format quantity as: short, compact, pretty
+        return f"{self.quantity:{QUANTITY_FORMAT_SPECIFIER}}"
+
     @require_same_quantity_type
     def __add__(self, other: QVar):
         result = self.quantity + other.quantity
@@ -100,26 +107,32 @@ class QVar:
         result_type = f"{self.quantity_type} / {other.quantity_type}"
         return QVar(quantity_type=result_type, raw_value=str(result))
 
+    @require_same_quantity_type
     def __eq__(self, other: QVar):
         result = self.quantity == other.quantity
         return result
 
+    @require_same_quantity_type
     def __lt__(self, other: QVar):
         result = self.quantity < other.quantity
         return result
 
+    @require_same_quantity_type
     def __le__(self, other: QVar):
         result = self.quantity <= other.quantity
         return result
 
+    @require_same_quantity_type
     def __gt__(self, other: QVar):
         result = self.quantity > other.quantity
         return result
 
+    @require_same_quantity_type
     def __ge__(self, other: QVar):
         result = self.quantity >= other.quantity
         return result
 
+    @require_same_quantity_type
     def __ne__(self, other: QVar):
         result = self.quantity != other.quantity
         return result
@@ -141,9 +154,13 @@ class QVar:
             raw_value=variable["value"],
         )
 
-    def _convert_to_si_units(self) -> None:
-        """This function converts an arbitrary value with arbitrary units into SI units."""
-        #  TODO: implement si converting
-        pass
+    def _convert_to_si_units(self) -> QVar:
+        """This function converts the QVar object into SI units (in-place).
+
+        Returns:
+            Quantity: The quantity, converted to base SI units.
+        """
+        self.quantity = self.quantity.to_base_units()
+        return self
 
 

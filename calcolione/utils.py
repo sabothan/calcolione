@@ -18,3 +18,6 @@ NUMERIC_UNIT_PATTERN = re.compile(r"^([-+]?\d+[.,]?\d*)\s*(.*)$")
 
 # Tolerance to evaluate a given answer its correctness
 ANSWER_TOLERANCE = 0.01
+
+# Quantity format specifier
+QUANTITY_FORMAT_SPECIFIER = "~#P"
