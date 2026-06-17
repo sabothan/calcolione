@@ -90,8 +90,8 @@ class QVar:
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __eq__(self, other: QVar):
-        # TODO: implement qvar equality
-        pass
+        result = self.quantity == other.quantity
+        return result
 
     def __lt__(self, other: QVar):
         # TODO: implement qvar less than
