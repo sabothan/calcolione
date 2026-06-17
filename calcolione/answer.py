@@ -51,6 +51,8 @@ class Answer:
 
             # Check input for allowed symbols
             allowed = re.fullmatch(ALLOWED_SYMBOLS, my_answer)
+            if not allowed:
+                print(" --> SyntaxError: Try again <-- ")
 
         # Parse the answer into numeric and unit and pack into QVar
         parsed_answer = self._parse(my_answer)
