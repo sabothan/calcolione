@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 # Allowed symbols for user input
 ALLOWED_SYMBOLS = re.compile(r"^[.,/*a-zA-Z0-9 \-+%°^()]+$")
@@ -22,3 +23,6 @@ ANSWER_TOLERANCE = 0.01
 # Quantity format specifier
 QUANTITY_FORMAT_SPECIFIER = "~P"    # short, pretty
 #QUANTITY_FORMAT_SPECIFIER = "~#P"   # short, compact, pretty (does type conversions: 1000m -> 1km)
+
+# Path to the JSON exercise file
+EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"

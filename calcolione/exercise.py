@@ -5,6 +5,7 @@ from typing_extensions import Self  # PEP 673
 
 from .answer import Answer
 from .question import Question
+from .utils import EXERCISE_FILE
 
 
 class Exercise:
@@ -16,13 +17,14 @@ class Exercise:
         self.question = question
         self.answer = answer
 
-    # TODO: fix faulty root/source directory path assignment to the Path object when calling the entrypoint 'calcolione'
     @classmethod
-    def get_exercise_from_json(cls, path:str = "calcolione/exercises.json") -> Self:
+    def get_exercise_from_json(cls, exercise_file:Path = EXERCISE_FILE) -> Self:
         """Read an exercise from a template JSON file.
         The template will be filled with randomised values.
+
+        Args:
+            exercise_file(Path, optional): The path to the JSON file containing the exercises.
         """
-        exercise_file = Path(path)
         if exercise_file.is_file():
             with open(exercise_file) as file:
                 exercise = json.load(file)
