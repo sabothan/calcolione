@@ -113,16 +113,16 @@ class QVar:
         return result
 
     def __gt__(self, other: QVar):
-        # TODO: implement qvar greater than
-        pass
+        result = self.quantity > other.quantity
+        return result
 
     def __ge__(self, other: QVar):
-        # TODO: implement qvar greater equal than
-        pass
+        result = self.quantity >= other.quantity
+        return result
 
     def __ne__(self, other: QVar):
-        # TODO: implement qvar not equal to
-        pass
+        result = self.quantity != other.quantity
+        return result
 
     @classmethod
     def from_dict(cls, variable: dict) -> Self:
