@@ -60,6 +60,7 @@ class QVar:
         
         # Post init processing of value
         # TODO: add check whether the given unit is supported by pint.UnitRegistry
+        # Maybe initialise as a NaN until raw_value is specified? (see answer calculation in answer.py)
         self.quantity = Quantity(self._raw_value)
 
     @require_same_quantity_type
@@ -75,10 +76,12 @@ class QVar:
     def __mul__(self, other: QVar):
         # TODO: implement qvar multiplication
         result = self.quantity * other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __truediv__(self, other: QVar):
         # TODO: implement qvar division (true)
-        pass
+        result = self.quantity / other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __floordiv__(self, other: QVar):
         # TODO: implement qvar floor division
