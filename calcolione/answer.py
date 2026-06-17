@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing_extensions import Self  # PEP 673
 
 from calcolione.qvar import QVar
@@ -25,7 +26,8 @@ class Answer:
         Returns:
             Answer: The instantiated class.
         """
-        # TODO: implement calculation of the correct answer from json variables?
+        # TODO: implement calculation of the correct answer from json variables
+        # Necessary to calculate beforehand, otherwise pint throws an error since Quantities cannot be define using an empty string.
         return cls(
             answer_type=answer["answer_type"],
             calculation=answer["calculation"],

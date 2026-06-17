@@ -3,8 +3,8 @@ from pathlib import Path
 
 from typing_extensions import Self  # PEP 673
 
-from calcolione.answer import Answer
-from calcolione.question import Question
+from .answer import Answer
+from .question import Question
 
 
 class Exercise:
@@ -16,15 +16,18 @@ class Exercise:
         self.question = question
         self.answer = answer
 
+    # TODO: fix faulty root/source directory path assignment to the Path object when calling the entrypoint 'calcolione'
     @classmethod
-    def get_exercise_from_json(cls) -> Self:
+    def get_exercise_from_json(cls, path:str = "calcolione/exercises.json") -> Self:
         """Read an exercise from a template JSON file.
         The template will be filled with randomised values.
         """
-        exercise_file = Path("exercises.json")
+        exercise_file = Path(path)
         if exercise_file.is_file():
             with open(exercise_file) as file:
                 exercise = json.load(file)
+        else:
+            raise FileNotFoundError(f"The JSON file at {str(exercise_file.absolute())} cannot be found")
 
         # TODO: implement randomising values
         return cls(
@@ -43,8 +46,8 @@ class Exercise:
     def evaluate_answer(self) -> None:
         """Evaluate the given answer for correctness."""
         print(
-            f"Given answer: {self.answer.my_answer.value} {self.answer.my_answer.unit}"
+            f"Given answer: {self.answer.my_answer.quantity}"
         )
-        print(f"Correct answer: {self.answer.result.value} {self.answer.result.unit}")
+        print(f"Correct answer: {self.answer.result.quantity}")
 
         # TODO: finish evaluation
