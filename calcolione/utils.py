@@ -20,4 +20,5 @@ NUMERIC_UNIT_PATTERN = re.compile(r"^([-+]?\d+[.,]?\d*)\s*(.*)$")
 ANSWER_TOLERANCE = 0.01
 
 # Quantity format specifier
-QUANTITY_FORMAT_SPECIFIER = "~#P"
+QUANTITY_FORMAT_SPECIFIER = "~P"    # short, pretty
+#QUANTITY_FORMAT_SPECIFIER = "~#P"   # short, compact, pretty (does type conversions: 1000m -> 1km)

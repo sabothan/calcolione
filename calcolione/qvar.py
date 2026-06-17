@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from pint import UnitRegistry, Quantity
+from pint import UnitRegistry
 from typing_extensions import Self  # PEP 673
 
 from .utils import QUANTITY_FORMAT_SPECIFIER
 
 # Define the unit registry
 unit = UnitRegistry()
-unit.formatter.default_format = QUANTITY_FORMAT_SPECIFIER # only formats pint-specific quantities
-
 
 # QVar specific decorator for magic methods:
 #   __add__
@@ -68,10 +66,10 @@ class QVar:
         self.quantity_type = quantity_type
         self._raw_value = raw_value
         
-        # Post init processing of value
-        # TODO: add check whether the given unit is supported by pint.UnitRegistry
-        # Maybe initialise as a NaN until raw_value is specified? (see answer calculation in answer.py)
-        self.quantity = Quantity(self._raw_value)
+        # Post init processing of value:
+        # Initialise the quantity as a NaN if no raw_value has been specified.
+        # This fixes the __str__ representation
+        self.quantity = unit.Quantity(self._raw_value) if self._raw_value else unit.Quantity(float("nan"))
 
     def __str__(self):
         # Format quantity as: short, compact, pretty
@@ -104,7 +102,7 @@ class QVar:
 
     def __mod__(self, other: QVar):
         result = self.quantity % other.quantity
-        result_type = f"{self.quantity_type} / {other.quantity_type}"
+        result_type = f"{self.quantity_type} % {other.quantity_type}"
         return QVar(quantity_type=result_type, raw_value=str(result))
 
     @require_same_quantity_type
