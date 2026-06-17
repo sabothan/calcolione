@@ -50,12 +50,15 @@ class Answer:
             my_answer: str = input("Answer: ")
 
             # Check input for allowed symbols
-            allowed = re.fullmatch(ALLOWED_SYMBOLS, my_answer)
+            allowed = bool(ALLOWED_SYMBOLS.match(my_answer))
             if not allowed:
                 print(" --> SyntaxError: Try again <-- ")
 
         # Parse the answer into numeric and unit and pack into QVar
         parsed_answer = self._parse(my_answer)
+
+        # Manually set the quantity_type of the given answer
+        parsed_answer.quantity_type = self.result.quantity_type
 
         # Write the parsed answer to the dedicated variable
         self.my_answer = parsed_answer
@@ -82,7 +85,8 @@ class Answer:
         # Expression type: e.g. 2*sin(34) * (2pi/rad)
         elif self._answer_type == "expression":
             parsed_answer = self._parse_expression(answer)  # sympy or similar
-            raise NotImplementedError("This functionality is not implemented yet")
+        else:
+            raise ValueError(f"Unknown answer type: '{self._answer_type}'")
 
         return parsed_answer
 
@@ -119,7 +123,7 @@ class Answer:
 
         return parsed_answer
 
-    def _parse_expression(self, answer: str) -> QVar:
+    def _parse_expression(self, answer: str):
         """Parses a scientific expression into a value with optional units.
 
         Args:
@@ -129,7 +133,7 @@ class Answer:
             QVar: The answer parsed into an object
         """
         # TODO: implement scientific expressions
-        return QVar()
+        raise NotImplementedError("This functionality is not implemented yet")
 
     def evaluate_answer(self) -> bool:
         """Evaluates the answer given by the user for correctness.
@@ -138,10 +142,8 @@ class Answer:
         Returns:
             bool: True if correct, False otherwise
         """
-        given_answer: QVar = self.my_answer
-        correct_answer: QVar = self.result
-        # TODO: implement comparison of QVar to raw tolerance
-        if abs(given_answer - correct_answer) <= ANSWER_TOLERANCE:
-            return True
-        else:
-            return False
+        given_answer = self.my_answer.quantity.to_base_units().magnitude
+        correct_answer = self.result.quantity.to_base_units().magnitude
+
+        # TODO implement more stable approach to evaluate the answer's correctness
+        return ((given_answer - correct_answer) <= ANSWER_TOLERANCE)
