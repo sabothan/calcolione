@@ -38,7 +38,7 @@ class Question:
 
         # Generate subsitutions prompts for the message string
         for var in self.vars:
-            substitutions[f"{var.name}.value"] = str(var.quantity)
+            substitutions[f"{var.name}.value"] = str(var)
 
         message = self.message
 

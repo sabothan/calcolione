@@ -1,5 +1,7 @@
+from __future__ import annotations
 import re
 from pathlib import Path
+
 
 # Allowed symbols for user input
 ALLOWED_SYMBOLS = re.compile(r"^[.,/*a-zA-Z0-9 \-+%°^()]+$")
@@ -26,3 +28,27 @@ QUANTITY_FORMAT_SPECIFIER = "~P"    # short, pretty
 
 # Path to the JSON exercise file
 EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"
+
+
+
+def substitute_placeholders(vars: list, body: str):
+    """Substitutes the actual values for the placeholders in a question's body.
+
+    Args:
+        vars (list[QVar]): A list of variables.
+        body (str): A string containing placeholders.
+
+    Returns:
+        str: The body with substituted placeholders.
+    """
+    substitutions = {}
+
+    # Generate subsitution prompts for the body string
+    for var in vars:
+        substitutions[f"{var.name}.value"] = str(var)
+    
+    # Substitute the variables into the body
+    for key, val in substitutions.items():
+        body = body.replace("{" + key + "}", str(val))
+    
+    return body

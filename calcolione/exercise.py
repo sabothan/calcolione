@@ -29,12 +29,13 @@ class Exercise:
             with open(exercise_file) as file:
                 exercise = json.load(file)
         else:
-            raise FileNotFoundError(f"The JSON file at {str(exercise_file.absolute())} cannot be found")
+            raise FileNotFoundError(f"The JSON file at {exercise_file} cannot be found")
 
         # TODO: implement randomising values
+
         return cls(
             question=Question.from_dict(exercise["question"]),
-            answer=Answer.from_dict(exercise["answer"]),
+            answer=Answer.from_dict(answer=exercise["answer"], vars=exercise["question"]["vars"]),
         )
 
     def display_question(self) -> None:
@@ -45,11 +46,16 @@ class Exercise:
         """Prompt the user for an answer."""
         self.answer._input_answer()
 
-    def evaluate_answer(self) -> None:
+    def evaluate_answer(self) -> bool:
         """Evaluate the given answer for correctness."""
-        print(
-            f"Given answer: {self.answer.my_answer.quantity}"
-        )
-        print(f"Correct answer: {self.answer.result.quantity}")
 
-        # TODO: finish evaluation
+        print(f"Given answer: {self.answer.my_answer}")
+        print(f"Correct answer: {self.answer.result}")
+
+        is_correct = self.answer.evaluate_answer()
+        if is_correct:
+            print("Correct")
+        else:
+            print("Wrong")
+
+        return is_correct

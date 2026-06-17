@@ -6,23 +6,27 @@ from calcolione.qvar import QVar
 from calcolione.utils import (
     ANSWER_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
-    ALLOWED_SYMBOLS
+    ALLOWED_SYMBOLS,
+    substitute_placeholders
 )
 
 
 class Answer:
     """Represents an answer object."""
 
-    def __init__(self, answer_type: str, calculation: str, result: QVar):
-        self._answer_type: str = answer_type
-        self._calculation: str = calculation
-        self.result: QVar = result
+    def __init__(self, answer_type: str, calculation: str, result: QVar, vars: list[QVar] = []):
+        self._answer_type = answer_type
+        self._calculation = calculation
+        self.vars = vars
 
         # Initialize input variables
         self.my_answer = QVar()
 
+        # Calculate result from vars
+        self.result = self._calculate_answer(result)
+
     @classmethod
-    def from_dict(cls, answer: dict) -> Self:
+    def from_dict(cls, answer: dict, vars: list) -> Self:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
@@ -31,13 +35,26 @@ class Answer:
         Returns:
             Answer: The instantiated class.
         """
-        # TODO: implement calculation of the correct answer from json variables
-        # Necessary to calculate beforehand, otherwise pint throws an error since Quantities cannot be define using an empty string.
         return cls(
             answer_type=answer["answer_type"],
             calculation=answer["calculation"],
             result=QVar.from_dict(answer["result"]),
+            vars=[QVar.from_dict(var) for var in vars]
         )
+    
+    def _calculate_answer(self, result: QVar):
+        parsed_calculation = substitute_placeholders(
+            vars=self.vars,
+            body=self._calculation,
+        )
+
+        return QVar(
+            raw_value=parsed_calculation,
+            name=result.name,
+            description=result.description,
+            quantity_type=result.quantity_type,
+        )._convert_to_si_units()
+        
 
     def _input_answer(self) -> None:
         """Prompts the user to input an answer.
