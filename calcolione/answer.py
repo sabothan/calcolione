@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing_extensions import Self  # PEP 673
+import re
 
 from calcolione.qvar import QVar
 from calcolione.utils import (
@@ -43,10 +44,13 @@ class Answer:
         The answer will be parsed into a pint.Quantity(numeric, unit) object,
         which will be stored in the the class's `self.my_answer`.
         """
-        # Prompt an answer
-        my_answer: str = input("Answer: ")
+        allowed = False
+        while(not allowed):
+            # Prompt an answer
+            my_answer: str = input("Answer: ")
 
-        # TODO: check input for allowed symbols
+            # Check input for allowed symbols
+            allowed = re.fullmatch(ALLOWED_SYMBOLS, my_answer)
 
         # Parse the answer into numeric and unit and pack into QVar
         parsed_answer = self._parse(my_answer)
