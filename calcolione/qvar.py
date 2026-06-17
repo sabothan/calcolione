@@ -91,10 +91,6 @@ class QVar:
         # TODO: implement qvar modulo
         pass
 
-    def __pow__(self, other: QVar):
-        # TODO: implement qvar power operations
-        pass
-
     def __eq__(self, other: QVar):
         # TODO: implement qvar equality
         pass
