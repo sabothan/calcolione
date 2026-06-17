@@ -74,23 +74,20 @@ class QVar:
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __mul__(self, other: QVar):
-        # TODO: implement qvar multiplication
         result = self.quantity * other.quantity
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __truediv__(self, other: QVar):
-        # TODO: implement qvar division (true)
         result = self.quantity / other.quantity
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __floordiv__(self, other: QVar):
-        # TODO: implement qvar floor division
         result = self.quantity // other.quantity
         return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __mod__(self, other: QVar):
-        # TODO: implement qvar modulo
-        pass
+        result = self.quantity % other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __eq__(self, other: QVar):
         # TODO: implement qvar equality
