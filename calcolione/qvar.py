@@ -85,7 +85,8 @@ class QVar:
 
     def __floordiv__(self, other: QVar):
         # TODO: implement qvar floor division
-        pass
+        result = self.quantity // other.quantity
+        return QVar(quantity_type=self.quantity_type, raw_value=str(result))
 
     def __mod__(self, other: QVar):
         # TODO: implement qvar modulo
