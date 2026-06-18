@@ -163,4 +163,4 @@ class Answer:
         correct_answer = self.result.quantity.to_base_units().magnitude
 
         # TODO implement more stable approach to evaluate the answer's correctness
-        return ((given_answer - correct_answer) <= ANSWER_TOLERANCE)
+        return abs(given_answer - correct_answer) <= ANSWER_TOLERANCE
