@@ -14,7 +14,7 @@ from calcolione.utils import (
 class Answer:
     """Represents an answer object."""
 
-    def __init__(self, answer_type: str, calculation: str, result: QVar, vars: list[QVar] = []):
+    def __init__(self, answer_type: str, calculation: str, result: QVar, vars: list[QVar]):
         self._answer_type = answer_type
         self._calculation = calculation
         self.vars = vars
