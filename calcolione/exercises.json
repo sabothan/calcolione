@@ -1,6 +1,6 @@
 {
     "question": {
-        "message": "A car travels at {v_car.value}. How many kilometers does it cover in {t_car.value}?",
+        "message": "A car travels at {v_car.value}. How much distance does it cover in {t_car.value}?",
         "vars": [
             {
                 "name": "v_car",
