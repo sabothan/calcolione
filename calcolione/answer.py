@@ -127,7 +127,7 @@ class Answer:
 
         # Handle incompatible anwers
         if not match:
-            # TODO: handle incompatible formats
+            # TODO handle incompatible formats
             return QVar()
 
         # Convert the input string into a QVar
@@ -149,7 +149,7 @@ class Answer:
         Returns:
             QVar: The answer parsed into an object
         """
-        # TODO: implement scientific expressions
+        # TODO implement scientific expressions
         raise NotImplementedError("This functionality is not implemented yet")
 
     def evaluate_answer(self) -> bool:
