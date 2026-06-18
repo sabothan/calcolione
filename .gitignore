@@ -3,4 +3,8 @@ dist
 .venv
 .DS_Store
 *.egg-info/
+.vscode
+.*_cache
+*__pycache__
+
 
