@@ -1,21 +1,21 @@
 {
     "question": {
-        "message": "A car travels at {v_car.value}. How much distance does it cover in {t_car.value}?",
-        "vars": [
-            {
-                "name": "v_car",
-                "description": "Velocity of a traveling car.",
-                "quantity_type": "velocity",
-                "value": "14 km/h"
-            },
-            {
-                "name": "t_car",
-                "description": "Travel-time of the car.",
-                "quantity_type": "time",
-                "value": "25 min"
-            }
-        ]
+        "message": "A car travels at {v_car.value}. How much distance does it cover in {t_car.value}?"
     },
+    "vars": [
+        {
+            "name": "v_car",
+            "description": "Velocity of a traveling car.",
+            "quantity_type": "velocity",
+            "value": "14 km/h"
+        },
+        {
+            "name": "t_car",
+            "description": "Travel-time of the car.",
+            "quantity_type": "time",
+            "value": "25 min"
+        }
+    ],
     "answer": {
         "answer_type": "numeric",
         "calculation": "{v_car.value} * {t_car.value}",

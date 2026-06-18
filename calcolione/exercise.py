@@ -34,8 +34,8 @@ class Exercise:
         # TODO: implement randomising values
 
         return cls(
-            question=Question.from_dict(exercise["question"]),
-            answer=Answer.from_dict(answer=exercise["answer"], vars=exercise["question"]["vars"]),
+            question=Question.from_dict(exercise["question"], vars=exercise["vars"]),
+            answer=Answer.from_dict(answer=exercise["answer"], vars=exercise["vars"]),
         )
 
     def display_question(self) -> None:

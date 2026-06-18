@@ -1,6 +1,7 @@
 from typing_extensions import Self  # PEP 673
 
 from calcolione.qvar import QVar
+from calcolione.utils import substitute_placeholders
 
 
 class Question:
@@ -14,7 +15,7 @@ class Question:
         self.message = self._render_message()
 
     @classmethod
-    def from_dict(cls, question: dict) -> Self:
+    def from_dict(cls, question: dict, vars: list) -> Self:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
@@ -25,7 +26,7 @@ class Question:
         """
         return cls(
             message=question["message"],
-            vars=[QVar.from_dict(var) for var in question["vars"]],
+            vars=[QVar.from_dict(var) for var in vars],
         )
 
     def _render_message(self) -> str:
@@ -34,19 +35,8 @@ class Question:
         Returns:
             str: The message body with substituted placeholders.
         """
-        substitutions = {}
-
-        # Generate subsitutions prompts for the message string
-        for var in self.vars:
-            substitutions[f"{var.name}.value"] = str(var)
-
-        message = self.message
-
-        # Substitute <value, unit> tuples into messages
-        for key, val in substitutions.items():
-            message = message.replace("{" + key + "}", str(val))
-
-        return message
+        parsed_message = substitute_placeholders(vars=self.vars, body=self.message)
+        return parsed_message
 
     def _get_question(self) -> str:
         """Get the question body (message).
