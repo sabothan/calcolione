@@ -51,4 +51,9 @@ def substitute_placeholders(vars: list, body: str):
     for key, val in substitutions.items():
         body = body.replace("{" + key + "}", str(val))
     
+    # Check for unresolved placeholders
+    unresolved = re.findall(r"\{[^}]+\}", body)
+    if unresolved:
+        raise ValueError(f"Unresolved placeholders: {unresolved}")
+
     return body

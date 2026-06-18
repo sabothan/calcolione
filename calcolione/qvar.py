@@ -1,5 +1,6 @@
 from __future__ import annotations
-
+from functools import wraps
+from typing import TypeVar, Callable, Any
 from pint import UnitRegistry
 from typing_extensions import Self  # PEP 673
 
@@ -16,8 +17,10 @@ unit = UnitRegistry()
 #   __lt__
 #   __ge__
 #   __gt__
-def require_same_quantity_type(f):
-    def wrapper(self:QVar, other:QVar):
+F = TypeVar("F", bound=Callable[..., Any])
+def require_same_quantity_type(f:F) -> F:
+    @wraps(f)
+    def wrapper(self:QVar, other:QVar) -> Any:
         if not isinstance(other, QVar):
             raise TypeError(f"Unsupported operant type: {type(other)}")
 
@@ -32,7 +35,7 @@ def require_same_quantity_type(f):
             )
 
         return f(self, other)
-    return wrapper
+    return wrapper # type: ignore[return-value]
 
 
 class QVar:
