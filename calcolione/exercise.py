@@ -31,7 +31,7 @@ class Exercise:
         else:
             raise FileNotFoundError(f"The JSON file at {exercise_file} cannot be found")
 
-        # TODO: implement randomising values
+        # TODO implement randomising values
 
         return cls(
             question=Question.from_dict(exercise["question"], vars=exercise["vars"]),
