@@ -21,6 +21,7 @@ classifiers = [
 version = "0.0.1"
 dependencies = [
     "pint",
+    "prompt_toolkit",
 ]
 
 [dependency-groups]

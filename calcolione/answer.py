@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing_extensions import Self  # PEP 673
 import re
 
-from calcolione.qvar import QVar
-from calcolione.utils import (
+from .qvar import QVar
+from .utils import (
     ANSWER_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
     ALLOWED_SYMBOLS,
@@ -55,29 +55,17 @@ class Answer:
             quantity_type=result.quantity_type,
         )._convert_to_si_units()
         
+    def _input_answer(self, answer: str) -> None:
+        """Parse and store an answer from a pre-validated string.
 
-    def _input_answer(self) -> None:
-        """Prompts the user to input an answer.
-        The answer will be parsed into a pint.Quantity(numeric, unit) object,
-        which will be stored in the the class's `self.my_answer`.
+        Used by the UI layer, which owns input collection and format validation.
+        The string is expected to have already passed ``ALLOWED_SYMBOLS`` validation.
+
+        Args:
+            answer (str): The raw answer string provided by the user.
         """
-        allowed = False
-        while(not allowed):
-            # Prompt an answer
-            my_answer: str = input("Answer: ")
-
-            # Check input for allowed symbols
-            allowed = bool(ALLOWED_SYMBOLS.match(my_answer))
-            if not allowed:
-                print(" --> SyntaxError: Try again <-- ")
-
-        # Parse the answer into numeric and unit and pack into QVar
-        parsed_answer = self._parse(my_answer)
-
-        # Manually set the quantity_type of the given answer
+        parsed_answer = self._parse(answer)
         parsed_answer.quantity_type = self.result.quantity_type
-
-        # Write the parsed answer to the dedicated variable
         self.my_answer = parsed_answer
 
     def _parse(self, answer: str) -> QVar:

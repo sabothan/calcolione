@@ -38,13 +38,24 @@ class Exercise:
             answer=Answer.from_dict(answer=exercise["answer"], vars=exercise["vars"]),
         )
 
-    def display_question(self) -> None:
-        """Print the question body to the terminal."""
-        print(self.question._get_question())
+    def get_question(self) -> str:
+        """Returns the question body as a string.
+        
+        Returns:
+            str: The question body.
+        """
+        return self.question._get_question()
 
-    def input_answer(self) -> None:
-        """Prompt the user for an answer."""
-        self.answer._input_answer()
+    def input_answer(self, answer: str) -> None:
+        """Prompt the user for an answer.
+        
+        Used by the UI layer, which owns input collection and format validation.
+        The string is expected to have already passed ``ALLOWED_SYMBOLS`` validation.
+
+        Args:
+            answer (str): The raw answer string provided by the user.
+        """
+        self.answer._input_answer(answer)
 
     def evaluate_answer(self) -> bool:
         """Evaluate the given answer for correctness."""
@@ -53,9 +64,4 @@ class Exercise:
         print(f"Correct answer: {self.answer.result}")
 
         is_correct = self.answer.evaluate_answer()
-        if is_correct:
-            print("Correct")
-        else:
-            print("Wrong")
-
         return is_correct
