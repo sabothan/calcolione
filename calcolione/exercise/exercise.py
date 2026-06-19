@@ -59,9 +59,4 @@ class Exercise:
 
     def evaluate_answer(self) -> bool:
         """Evaluate the given answer for correctness."""
-
-        print(f"Given answer: {self.answer.my_answer}")
-        print(f"Correct answer: {self.answer.result}")
-
-        is_correct = self.answer.evaluate_answer()
-        return is_correct
+        return self.answer.evaluate_answer()
