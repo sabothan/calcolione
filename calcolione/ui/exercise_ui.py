@@ -21,7 +21,8 @@ class ExerciseUI(UI):
         self.answer_buffer: Buffer = Buffer(name="answer")
         self.answer_buffer.accept_handler = self._handle_answer  # type: ignore[assignment]
 
-        self.question = "Question goes here"
+        self._question: tuple[str, str] = ("class:question", "Question goes here: ...")
+        self._feedback: tuple[str, str] = ("class:hint", " Enter your answer above.")
 
         super().__init__(screen_title="Exercise")
 
@@ -47,6 +48,12 @@ class ExerciseUI(UI):
         buf.reset()
         return False
 
+    def _get_feedback_text(self) -> list[tuple[str, str]]:
+        return [self._feedback]
+    
+    def _get_question_text(self) -> list[tuple[str, str]]:
+        return [self._question]
+
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.
 
@@ -58,7 +65,7 @@ class ExerciseUI(UI):
             height=1,
         )
         question_body = Window(
-            content=FormattedTextControl([("class:question", f" {self.question}")]),
+            content=FormattedTextControl(self._get_question_text),
             height=3,
             wrap_lines=True,
         )
@@ -83,9 +90,8 @@ class ExerciseUI(UI):
 
         input_row = VSplit([input_prefix, self._input_field])
 
-        # TODO: make feedback dynamic - update content after each answer attempt
         feedback_window = Window(
-            content=FormattedTextControl([("class:hint", " feedback goes here")]),
+            content=FormattedTextControl(self._get_feedback_text),
             height=1,
         )
 

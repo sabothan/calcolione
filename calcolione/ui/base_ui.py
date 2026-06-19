@@ -1,5 +1,6 @@
 """Terminal UI for calcolione using prompt_toolkit."""
 
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Any
 
@@ -96,6 +97,9 @@ class UI(ABC):
 
         self.kb = KeyBindings()
 
+        # None means "show hints"; any string means "show that feedback instead"
+        self._command_feedback : str | None = None
+
         # Layout, body, and command_buffer are built once and cached here.
         # Rebuilding them would discard the existing Window objects, causing
         # prompt_toolkit to lose focus tracking - keypresses would stop
@@ -143,6 +147,7 @@ class UI(ABC):
         @self.kb.add(":")
         def enter_command_mode(event: object) -> None:
             """Shift focus to the command footer on `:`, vim-style."""
+            self._command_feedback = None
             self.command_buffer.reset()
             self.command_buffer.insert_text(":")
             event.app.layout.focus(self._command_window)  # type: ignore[attr-defined]
@@ -162,12 +167,25 @@ class UI(ABC):
         """
         cmd = buf.text.strip().lstrip(":")
 
-        if cmd == "quit":
+        if cmd in ("q", "quit"):
             get_app().exit()
+        elif cmd in ("h", "help"):
+            # TODO implement help display
+            pass
+        else:
+            self._command_feedback = f"Not a command: {cmd}"
 
         get_app().layout.focus(self._default_focus_target)
         buf.reset()
         return False
+
+    def _footer_text(self) -> list[tuple[str, str]]:
+        if self._command_feedback is not None:
+            text = [("class:warning", f" {self._command_feedback}")]
+        else:
+            text = [("class:footer", " Type `:` to enter command mode")]
+        
+        return text
 
     def make_layout(self) -> Layout:
         """Assemble the full screen layout from shared chrome and the cached body.
@@ -185,7 +203,7 @@ class UI(ABC):
         )
         divider = Window(height=1, char="-")
         footer = Window(
-            content=FormattedTextControl([("class:footer", " :quit  :help")]),
+            content=FormattedTextControl(self._footer_text),
             height=1,
         )
 
