@@ -21,7 +21,7 @@ class ExerciseUI(UI):
         self.answer_buffer: Buffer = Buffer(name="answer")
         self.answer_buffer.accept_handler = self._handle_answer  # type: ignore[assignment]
 
-        self._question: tuple[str, str] = ("class:question", "Question goes here: ...")
+        self._question: tuple[str, str] = ("class:question", " Question goes here: ...")
         self._feedback: tuple[str, str] = ("class:hint", " Enter your answer above.")
 
         super().__init__(screen_title="Exercise")
