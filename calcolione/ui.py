@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Any
 
 from prompt_toolkit import PromptSession, Application
+from prompt_toolkit.application import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.formatted_text import HTML
@@ -100,13 +101,14 @@ class UI(ABC):
         # prompt_toolkit to lose focus tracking - keypresses would stop
         # registering until focus is explicitly reset.
         self.body: HSplit = self.make_body()
-
         self.command_buffer: Buffer = Buffer(name="command")
         self._command_window: Window = Window(
             content=BufferControl(buffer=self.command_buffer),
             height=1,
         )
 
+        # Setup the command buffer and the keybindings
+        self.command_buffer.accept_handler = self._handle_command
         self._register_keybindings()
 
         self.app = Application(
@@ -125,6 +127,12 @@ class UI(ABC):
     @screen_title.setter
     def screen_title(self, value: str) -> None:
         self._screen_title = value
+    
+    @property
+    @abstractmethod
+    def _default_focus_target(self) -> Window:
+        """The window that should receive focus after a command is dispatched."""
+        ...
 
     def _register_keybindings(self) -> None:
         """Register keybindings shared across all screens.
@@ -138,6 +146,24 @@ class UI(ABC):
             self.command_buffer.reset()
             self.command_buffer.insert_text(":")
             event.app.layout.focus(self._command_window)  # type: ignore[attr-defined]
+
+    def _handle_command(self, buf: Buffer) -> bool:
+        """Dispatch a vim-style command entered in the command footer.
+
+        Args:
+            buf (Buffer): The command buffer.
+
+        Returns:
+            bool: False to clear the buffer after submission.
+        """
+        cmd = buf.text.strip().lstrip(":")
+
+        if cmd == "quit":
+            get_app().exit()
+
+        get_app().layout.focus(self._default_focus_target)
+        buf.reset()
+        return False
 
     def make_layout(self) -> Layout:
         """Assemble the full screen layout from shared chrome and the cached body.
@@ -171,7 +197,7 @@ class UI(ABC):
             self._command_window,
         ])
 
-        return Layout(root)
+        return Layout(root, focused_element=self._default_focus_target)
 
     @abstractmethod
     def make_body(self) -> HSplit:
@@ -201,6 +227,10 @@ class ExerciseUI(UI):
         self.question = "Question goes here"
 
         super().__init__(screen_title="Exercise")
+
+    @property
+    def _default_focus_target(self) -> Window:
+        return self._input_field  # store this as self._input_field in make_body
 
     def _register_keybindings(self) -> None:
         super()._register_keybindings()  # inherit shared bindings (`:` command mode)
@@ -249,11 +279,17 @@ class ExerciseUI(UI):
             width=3,
             dont_extend_width=True,
         )
-        input_field = Window(
+
+        # _input_field is a member variable intentionally,
+        # so _default_focus_target can return it by reference
+        # prompt_toolkit tracks focus by Window identity, so the
+        # command handler must refocus the exact same object that is in the layout.
+        self._input_field = Window(
             content=BufferControl(buffer=self.answer_buffer),
             height=1,
         )
-        input_row = VSplit([input_prefix, input_field])
+
+        input_row = VSplit([input_prefix, self._input_field])
 
         # TODO: make feedback dynamic - update content after each answer attempt
         feedback_window = Window(
@@ -269,3 +305,6 @@ class ExerciseUI(UI):
             Window(height=1),
             feedback_window,
         ])
+        
+    def run(self) -> None:
+        self.app.run()
