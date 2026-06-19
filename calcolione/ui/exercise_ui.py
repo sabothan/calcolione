@@ -1,6 +1,9 @@
 """Terminal UI for calcolione using prompt_toolkit."""
 
+from __future__ import annotations
+from enum import Enum
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.application import get_app
 from prompt_toolkit.layout.containers import HSplit, VSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
@@ -8,6 +11,11 @@ from ..exercise.exercise import Exercise
 from ..utils import ALLOWED_SYMBOLS
 from .base_ui import UI
 
+class Feedback(Enum):
+    HINT = 1
+    CORRECT = 2
+    WRONG = 3
+    
 # ---------------------------------------------------------------------------
 # Exercise screen
 # ---------------------------------------------------------------------------
@@ -18,11 +26,12 @@ class ExerciseUI(UI):
     def __init__(self) -> None:
         # answer_buffer and question must exist before super().__init__()
         # because make_body (called by the base class) references them.
-        self.answer_buffer: Buffer = Buffer(name="answer")
+        self.answer_buffer: Buffer = Buffer(name="answer", multiline=False)
         self.answer_buffer.accept_handler = self._handle_answer  # type: ignore[assignment]
 
-        self._question: tuple[str, str] = ("class:question", " Question goes here: ...")
-        self._feedback: tuple[str, str] = ("class:hint", " Enter your answer above.")
+        # Load an exercise and generate an initial navigation hint
+        self.load_exercise_and_init_feedback()
+        
 
         super().__init__(screen_title="Exercise")
 
@@ -43,16 +52,23 @@ class ExerciseUI(UI):
             bool: False to clear the buffer after submission.
         """
         answer = buf.text.strip()
-        # TODO: exercise.answer._input_answer_from_string(answer)
-        # TODO: evaluate and update feedback window
+        if not answer:
+            buf.reset()
+            return False
+
+        self.exercise.input_answer(answer=answer)
+        
+        is_correct = self.exercise.evaluate_answer()
+        if is_correct:
+            feedback = self.generate_feedback(Feedback.CORRECT)
+        else:
+            feedback = self.generate_feedback(Feedback.WRONG)
+
+        self.set_feedback(feedback)
+        get_app().invalidate()
+
         buf.reset()
         return False
-
-    def _get_feedback_text(self) -> list[tuple[str, str]]:
-        return [self._feedback]
-    
-    def _get_question_text(self) -> list[tuple[str, str]]:
-        return [self._question]
 
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.
@@ -65,7 +81,7 @@ class ExerciseUI(UI):
             height=1,
         )
         question_body = Window(
-            content=FormattedTextControl(self._get_question_text),
+            content=FormattedTextControl(self.get_question),
             height=3,
             wrap_lines=True,
         )
@@ -91,7 +107,7 @@ class ExerciseUI(UI):
         input_row = VSplit([input_prefix, self._input_field])
 
         feedback_window = Window(
-            content=FormattedTextControl(self._get_feedback_text),
+            content=FormattedTextControl(self.get_feedback),
             height=1,
         )
 
@@ -106,3 +122,28 @@ class ExerciseUI(UI):
         
     def run(self) -> None:
         self.app.run()
+    
+    def load_exercise_and_init_feedback(self) -> None:
+        self.exercise = Exercise.get_exercise_from_json()
+        self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))            
+    
+    def get_question(self) -> list[tuple[str, str]]:
+        return [("class:question", f" {self.exercise.get_question()}")]
+    
+    def get_feedback(self) -> list[tuple[str, str]]:
+        return self._feedback
+    
+    def set_feedback(self, feedback:list[tuple[str,str]]) -> None:
+        self._feedback = feedback
+
+    def generate_feedback(self, feedback_type:Feedback) -> list[tuple[str, str]]:
+        if feedback_type is Feedback.HINT:
+            feedback = [("class:hint", f" Enter your answer above.")]
+        elif feedback_type is Feedback.CORRECT:
+            feedback = [("class:correct", f" Correct.")]
+        elif feedback_type is Feedback.WRONG:
+            feedback = [("class:wrong", f" Wrong! Try again.")]
+        else:
+            raise ValueError("Unknown Feedback type")
+        
+        return feedback
