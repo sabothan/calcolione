@@ -2,7 +2,7 @@
 
 import sys
 
-from .ui import ExerciseUI
+from .ui.exercise_ui import ExerciseUI
 
 
 def main() -> int:

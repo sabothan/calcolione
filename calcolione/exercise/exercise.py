@@ -5,7 +5,7 @@ from typing_extensions import Self  # PEP 673
 
 from .answer import Answer
 from .question import Question
-from .utils import EXERCISE_FILE
+from ..utils import EXERCISE_FILE
 
 
 class Exercise:

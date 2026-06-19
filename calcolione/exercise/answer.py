@@ -3,7 +3,7 @@ from typing_extensions import Self  # PEP 673
 import re
 
 from .qvar import QVar
-from .utils import (
+from ..utils import (
     ANSWER_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
     ALLOWED_SYMBOLS,

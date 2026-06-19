@@ -1,7 +1,7 @@
 from typing_extensions import Self  # PEP 673
 
 from .qvar import QVar
-from .utils import substitute_placeholders
+from ..utils import substitute_placeholders
 
 
 class Question:
