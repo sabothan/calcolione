@@ -9,7 +9,7 @@ from prompt_toolkit.layout.containers import HSplit, VSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
 from ..exercise.exercise import Exercise
-from ..utils import ALLOWED_SYMBOLS, get_logger
+from ..utils import ALLOWED_SYMBOLS, get_logger, InvalidInputFormatError
 from .base_ui import UI
 
 # Create the logger instance
@@ -24,7 +24,8 @@ class Feedback(Enum):
     ERROR_OFFSET_UNIT = 6
     ERROR_ASSERTION = 7
     ERROR_UNEXPECTED = 8
-    
+    ERROR_INVALID_FORMAT = 9
+
 # ---------------------------------------------------------------------------
 # Exercise screen
 # ---------------------------------------------------------------------------
@@ -76,6 +77,8 @@ class ExerciseUI(UI):
             self.set_feedback(self.generate_feedback(Feedback.ERROR_OFFSET_UNIT))
         except AssertionError:
             self.set_feedback(self.generate_feedback(Feedback.ERROR_ASSERTION))
+        except InvalidInputFormatError:
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_INVALID_FORMAT))
         except Exception as e:
             log.error(
                 "Unhandled exception in _handle_answer",
@@ -180,6 +183,8 @@ class ExerciseUI(UI):
             feedback = [("class:error", " Malformed expression")]
         elif feedback_type is Feedback.ERROR_UNEXPECTED:
             feedback = [("class:error", " Unexpected error - see log")]
+        elif feedback_type is Feedback.ERROR_INVALID_FORMAT:
+            feedback = [("class:error", " Invalid input format - expected a number followed by a unit")]
         else:
             raise ValueError("Unknown Feedback type")
         return feedback

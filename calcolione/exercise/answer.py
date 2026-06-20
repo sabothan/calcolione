@@ -9,7 +9,8 @@ from ..utils import (
     ANSWER_REL_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
     ALLOWED_SYMBOLS,
-    substitute_placeholders
+    substitute_placeholders,
+    InvalidInputFormatError,
 )
 
 
@@ -117,7 +118,7 @@ class Answer:
 
         # Handle incompatible anwers
         if not match:
-            raise ValueError(f"Invalid input format: {answer!r} - expected a number followed by a unit")
+            raise InvalidInputFormatError(f"Expected a number followed by a unit, got: {answer!r}")
 
         # Convert the input string into a QVar
         parsed_answer = QVar(

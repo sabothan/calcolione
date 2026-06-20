@@ -41,7 +41,7 @@
             "id": "error_undefined_unit_2",
             "description": "Pure non-unit string",
             "input": "abc",
-            "expected_outcome": "unknown"
+            "expected_outcome": "error_invalid_format"
         },
         {
             "id": "error_assertion",

@@ -25,7 +25,7 @@ from pint.errors import UndefinedUnitError, DimensionalityError, OffsetUnitCalcu
 
 from calcolione.exercise.exercise import Exercise
 from calcolione.ui.base_ui import STYLE
-from calcolione.utils import EXERCISE_FILE, LOG_FILE, get_logger
+from calcolione.utils import EXERCISE_FILE, LOG_FILE, get_logger, InvalidInputFormatError
 
 log = get_logger(__name__)
 
@@ -88,6 +88,8 @@ def _resolve_outcome(
         return "error_offset_unit", "class:error", "Offset units not supported here", "OffsetUnitCalculusError", str(e)
     except AssertionError as e:
         return "error_assertion", "class:error", "Malformed expression", "AssertionError", str(e)
+    except InvalidInputFormatError as e:
+        return "error_invalid_format", "class:error", "Invalid format - expected numeric followed by unit", "InvalidInputFormatError", str(e)
     except Exception as e:
         return "error_unexpected", "class:error", "Unexpected error", type(e).__name__, str(e)
 

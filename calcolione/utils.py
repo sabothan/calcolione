@@ -102,3 +102,8 @@ def open_in_editor(file:Path) -> None:
         subprocess.run(["open", file])
     else:
         subprocess.run(["xdg-open", file])
+
+# Custom Errors and exceptions
+class InvalidInputFormatError(ValueError):
+    """Raised when the answer string does not match the expected numeric format."""
+    pass
