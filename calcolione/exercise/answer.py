@@ -117,8 +117,7 @@ class Answer:
 
         # Handle incompatible anwers
         if not match:
-            # TODO handle incompatible formats
-            return QVar()
+            raise ValueError(f"Invalid input format: {answer!r} - expected a number followed by a unit")
 
         # Convert the input string into a QVar
         parsed_answer = QVar(

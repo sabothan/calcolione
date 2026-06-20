@@ -34,10 +34,10 @@ STYLE = Style.from_dict({
     "question": "fg:#cdd6f4",
     "prompt":   "fg:#89dceb bold",
     "hint":     "#6c7086",
-    "correct":  "fg:#a6e3a1 bold",
-    "wrong":    "fg:#f38ba8 bold",
-    "warning":  "fg:#f9e2af",
-    "error":    "fg:#f38ba8",
+    "correct":  "fg:#40ff80 bold",   # bright lime green
+    "wrong":    "fg:#ff5555 bold",   # strong red
+    "warning":  "fg:#ffb86c bold",   # orange
+    "error":    "fg:#ff9500 bold",   # amber/orange, distinct from wrong
     "dim":      "fg:#6c7086",
 })
 
