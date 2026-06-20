@@ -57,15 +57,15 @@
         },
         {
             "id": "pint_silent_accept_1",
-            "description": "pint silently accepts this - tracks actual behavior",
+            "description": "Adjacent numerics - pint treats as implicit multiplication (5*5 km = 25 km)",
             "input": "5 5 km",
-            "expected_outcome": "unknown"
+            "expected_outcome": "wrong"
         },
         {
             "id": "pint_silent_accept_2",
-            "description": "pint silently accepts this - tracks actual behavior",
+            "description": "Compound unit - valid physics expression (km*h), wrong dimensions",
             "input": "5 km h",
-            "expected_outcome": "unknown"
+            "expected_outcome": "wrong"
         },
         {
             "id": "negative_value",
@@ -78,6 +78,12 @@
             "description": "Numeric only, no unit",
             "input": "5.833",
             "expected_outcome": "wrong"
-        }
+        },
+        {
+            "id": "error_invalid_format_asdf",
+            "description": "Letter-only string with no leading digit",
+            "input": "asdf",
+            "expected_outcome": "error_invalid_format"
+    }
     ]
 }
