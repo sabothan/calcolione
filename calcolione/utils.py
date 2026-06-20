@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 from pathlib import Path
+import logging
 
 
 # Allowed symbols for user input
@@ -29,7 +30,8 @@ QUANTITY_FORMAT_SPECIFIER = "~P"    # short, pretty
 # Path to the JSON exercise file
 EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"
 
-
+# Path to the log-file
+LOG_FILE = Path.home() / "local" / "share" / "calcolione" / "calcolione.log"
 
 def substitute_placeholders(vars: list, body: str):
     """Substitutes the actual values for the placeholders in a question's body.
@@ -57,3 +59,29 @@ def substitute_placeholders(vars: list, body: str):
         raise ValueError(f"Unresolved placeholders: {unresolved}")
 
     return body
+
+def get_logger(name:str) -> logging.Logger:
+    """Return a logger that writes to LOG_FILE.
+
+    Creates the log directory if it does not exist.
+    Safe to call multiple times - handlers are only added once.
+
+    Args:
+        name (str): Logger name, typically __name__ of the calling module.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    logger = logging.getLogger(name)
+
+    if not logger.handlers:
+        LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
+        handler.setFormatter(logging.Formatter(
+            fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        ))
+        logger.addHandler(handler)
+        logger.setLevel(logging.DEBUG)
+
+    return logger
