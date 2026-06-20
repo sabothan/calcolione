@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing_extensions import Self  # PEP 673
 import re
+from math import isclose
 
 from .qvar import QVar
 from ..utils import (
-    ANSWER_TOLERANCE,
+    ANSWER_ABS_TOLERANCE,
+    ANSWER_REL_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
     ALLOWED_SYMBOLS,
     substitute_placeholders
@@ -150,5 +152,9 @@ class Answer:
         given_answer = self.my_answer.quantity.to_base_units().magnitude
         correct_answer = self.result.quantity.to_base_units().magnitude
 
-        # TODO implement more stable approach to evaluate the answer's correctness
-        return abs(given_answer - correct_answer) <= ANSWER_TOLERANCE
+        return isclose(
+            a=given_answer,
+            b=correct_answer,
+            abs_tol=ANSWER_ABS_TOLERANCE,
+            rel_tol=ANSWER_REL_TOLERANCE,
+        )
