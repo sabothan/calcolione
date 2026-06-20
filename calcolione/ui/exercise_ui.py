@@ -21,7 +21,11 @@ class Feedback(Enum):
     HINT = 1
     CORRECT = 2
     WRONG = 3
-    ERROR = 4
+    ERROR_UNDEFINED_UNIT = 4
+    ERROR_DIMENSIONALITY = 5
+    ERROR_OFFSET_UNIT = 6
+    ERROR_ASSERTION = 7
+    ERROR_UNEXPECTED = 8
     
 # ---------------------------------------------------------------------------
 # Exercise screen
@@ -63,15 +67,33 @@ class ExerciseUI(UI):
             buf.reset()
             return False
 
-        self.exercise.input_answer(answer=answer)
         
-        is_correct = self.exercise.evaluate_answer()
-        if is_correct:
-            feedback = self.generate_feedback(Feedback.CORRECT)
+        try:
+            self.exercise.input_answer(answer=answer)
+        except UndefinedUnitError:
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_UNDEFINED_UNIT))
+        except DimensionalityError:
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_DIMENSIONALITY))
+        except OffsetUnitCalculusError:
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_OFFSET_UNIT))
+        except AssertionError:
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_ASSERTION))
+        except Exception as e:
+            log.error(
+                "Unhandled exception in _handle_answer",
+                exc_info=True,
+                extra={"answer": answer, "question": self.exercise.get_question()},
+            )
+            self.set_feedback(self.generate_feedback(Feedback.ERROR_UNEXPECTED))
         else:
-            feedback = self.generate_feedback(Feedback.WRONG)
+            is_correct = self.exercise.evaluate_answer()
+            if is_correct:
+                feedback = self.generate_feedback(Feedback.CORRECT)
+            else:
+                feedback = self.generate_feedback(Feedback.WRONG)
 
-        self.set_feedback(feedback)
+            self.set_feedback(feedback)
+
         get_app().invalidate()
 
         buf.reset()
@@ -150,7 +172,16 @@ class ExerciseUI(UI):
             feedback = [("class:correct", f" Correct.")]
         elif feedback_type is Feedback.WRONG:
             feedback = [("class:wrong", f" Wrong! Try again.")]
+        elif feedback_type is Feedback.ERROR_UNDEFINED_UNIT:
+            feedback = [("class:error", " Unknown unit")]
+        elif feedback_type is Feedback.ERROR_DIMENSIONALITY:
+            feedback = [("class:error", " Incompatible dimensions")]
+        elif feedback_type is Feedback.ERROR_OFFSET_UNIT:
+            feedback = [("class:error", " Offset units (e.g. degC) not supported here")]
+        elif feedback_type is Feedback.ERROR_ASSERTION:
+            feedback = [("class:error", " Malformed expression")]
+        elif feedback_type is Feedback.ERROR_UNEXPECTED:
+            feedback = [("class:error", " Unexpected error - see log")]
         else:
             raise ValueError("Unknown Feedback type")
-        
         return feedback
