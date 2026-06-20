@@ -15,6 +15,7 @@ class Feedback(Enum):
     HINT = 1
     CORRECT = 2
     WRONG = 3
+    ERROR = 4
     
 # ---------------------------------------------------------------------------
 # Exercise screen
