@@ -2,6 +2,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 import logging
+import os
+import sys
+import subprocess
 
 
 # Allowed symbols for user input
@@ -85,3 +88,16 @@ def get_logger(name:str) -> logging.Logger:
         logger.setLevel(logging.DEBUG)
 
     return logger
+
+def open_in_editor(file:Path) -> None:
+    """Helper function to open a file (logfile) in an editor.
+
+    Args:
+        file (Path): The path to the file
+    """
+    if sys.platform == "win32":
+        os.startfile(file)
+    elif sys.platform == "darwin":
+        subprocess.run(["open", file])
+    else:
+        subprocess.run(["xdg-open", file])
