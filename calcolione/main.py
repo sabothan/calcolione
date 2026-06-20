@@ -18,10 +18,16 @@ def main() -> int:
         description="Train applied physics and math calculations.",
         epilog="Run without flags to start the exercise session.",
     )
-    parser.add_argument(
+    log_group = parser.add_mutually_exclusive_group()
+    log_group.add_argument(
         "--logfile",
         action="store_true",
-        help="Open the log file in the system default editor.",
+        help="Open the log file in the system default editor. (The application won't be started)",
+    )
+    log_group.add_argument(
+        "--clear-logfile",
+        action="store_true",
+        help="Clear the log file.",
     )
     args = parser.parse_args()
 
@@ -30,6 +36,13 @@ def main() -> int:
             print(f"No log file found at {LOG_FILE}")
             return 1
         open_in_editor(LOG_FILE)
+    elif args.clear_logfile:
+        if not LOG_FILE.exists():
+            print(f"No log file found at {LOG_FILE}")
+            return 1
+        LOG_FILE.write_text("")
+        print(f"Log file cleared: {LOG_FILE}")
+        return 0
     else:
         ExerciseUI().run()
 

@@ -37,7 +37,7 @@ STYLE = Style.from_dict({
     "correct":  "fg:#a6e3a1 bold",
     "wrong":    "fg:#f38ba8 bold",
     "warning":  "fg:#f9e2af",
-    "error":    "fg:#000000 bg:#ff0000",
+    "error":    "fg:#f38ba8",
     "dim":      "fg:#6c7086",
 })
 
