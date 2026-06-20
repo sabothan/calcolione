@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 from enum import Enum
+from pint.errors import UndefinedUnitError, DimensionalityError, OffsetUnitCalculusError
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.application import get_app
 from prompt_toolkit.layout.containers import HSplit, VSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
 from ..exercise.exercise import Exercise
-from ..utils import ALLOWED_SYMBOLS
+from ..utils import ALLOWED_SYMBOLS, get_logger
 from .base_ui import UI
+
+# Create the logger instance
+# TODO make sure the logger is created only once globally.
+# Necessary, once multiple screens are implemented.
+log = get_logger(__name__)
 
 class Feedback(Enum):
     HINT = 1
