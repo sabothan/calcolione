@@ -90,7 +90,6 @@ class UI(ABC):
     def __init__(self, screen_title: str) -> None:
         self._screen_title = screen_title
 
-        # TODO: wire up once Application flow is finalised
         self._session: PromptSession = PromptSession(  # type: ignore[type-arg]
             validator=AnswerFormatValidator(),
             validate_while_typing=False,

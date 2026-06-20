@@ -35,7 +35,7 @@ QUANTITY_FORMAT_SPECIFIER = "~P"    # short, pretty
 EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"
 
 # Path to the log-file
-LOG_FILE = Path.home() / "local" / "share" / "calcolione" / "calcolione.log"
+LOG_FILE = Path.home() / ".local" / "share" / "calcolione" / "calcolione.log"
 
 def substitute_placeholders(vars: list, body: str):
     """Substitutes the actual values for the placeholders in a question's body.

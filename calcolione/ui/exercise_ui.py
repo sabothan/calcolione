@@ -13,8 +13,6 @@ from ..utils import ALLOWED_SYMBOLS, get_logger
 from .base_ui import UI
 
 # Create the logger instance
-# TODO make sure the logger is created only once globally.
-# Necessary, once multiple screens are implemented.
 log = get_logger(__name__)
 
 class Feedback(Enum):
