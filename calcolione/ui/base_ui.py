@@ -177,9 +177,10 @@ class UI(ABC):
         def close_help(event: object) -> None:
             """Close the help screen on Escape."""
             if self._help_visible:
-                # Reset visibility and the scrolling tracker on close
+                # Reset visibility, feedback and the scrolling tracker on close
                 self._help_visible = False
                 self._help_scroll = 0
+                self._command_feedback = None
 
                 # Refocus and reload
                 event.app.layout.focus(self._default_focus_target)  # type: ignore[attr-defined]
@@ -196,7 +197,10 @@ class UI(ABC):
 
         @self.kb.add("down", filter=Condition(lambda: self._help_visible))
         def scroll_help_down(event: object) -> None:
-            max_scroll = max(0, len(self._help_content()) - 1)
+            output_rows = event.app.output.get_size().rows  # type: ignore[attr-defined]
+            chrome_lines = 7  # header + title + divider + spacer + divider + footer + command
+            visible_lines = output_rows - chrome_lines
+            max_scroll = max(0, len(self._help_content()) - visible_lines)
             if self._help_scroll >= max_scroll:
                 self._command_feedback = "Already at the bottom"
             else:
