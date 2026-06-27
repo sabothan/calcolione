@@ -99,6 +99,8 @@ class UI(ABC):
 
     def __init__(self, screen_title: str) -> None:
         self._screen_title = screen_title
+
+        # Helper variables for scrolling behaviour and visibility of the help window
         self._help_visible : bool = False
         self._help_scroll: int = 0
 
@@ -123,7 +125,6 @@ class UI(ABC):
             height=1,
             dont_extend_height=True,
         )
-        help_text = "".join(text for _, text in self._help_content())
 
         # Setup the command buffer and the keybindings
         self.command_buffer.accept_handler = self._handle_command
@@ -164,10 +165,12 @@ class UI(ABC):
             self._command_feedback = None
             self.command_buffer.reset()
             self.command_buffer.insert_text(":")
+            # Focus on the command-window when entering command-mode
             event.app.layout.focus(self._command_window)  # type: ignore[attr-defined]
         
         @self.kb.add("enter", filter=has_focus(self.command_buffer))
         def submit_command(event: object) -> None:
+            # Trigger accept_handler, which dispatches the command and resets focus
             self.command_buffer.validate_and_handle()
         
         @self.kb.add("escape", eager=True)
@@ -182,14 +185,15 @@ class UI(ABC):
                 event.app.layout.focus(self._default_focus_target)  # type: ignore[attr-defined]
                 event.app.invalidate()  # type: ignore[attr-defined]
 
-        
         @self.kb.add("up", filter=Condition(lambda: self._help_visible))
         def scroll_help_up(event: object) -> None:
+            # Per <up-arrow> click, move the content of help-window up
             self._help_scroll = max(0, self._help_scroll - 1)
             event.app.invalidate()  # type: ignore[attr-defined]
 
         @self.kb.add("down", filter=Condition(lambda: self._help_visible))
         def scroll_help_down(event: object) -> None:
+            # Per <down-arrow> click, move the content of help-window down
             max_scroll = max(0, len(self._help_content()) - 1)
             self._help_scroll = min(max_scroll, self._help_scroll + 1)
             event.app.invalidate()  # type: ignore[attr-defined]
@@ -205,11 +209,12 @@ class UI(ABC):
         """
         cmd = buf.text.strip().lstrip(":")
 
+        # filter out existing commands
         if cmd in self.COMMANDS["quit"]["cmd"]:
             get_app().exit()
         elif cmd in self.COMMANDS["help"]["cmd"]:
             self._help_visible = not self._help_visible
-            self._help_scroll = 0 # Reset scroll tracker when toggling help off
+            self._help_scroll = 0 # Reset scroll position whenever help is toggled
             get_app().invalidate()
         else:
             self._command_feedback = f"Not a command/not implemented yet: {cmd}"
@@ -219,6 +224,13 @@ class UI(ABC):
         return False
 
     def _footer_text(self) -> list[tuple[str, str]]:
+        """Generates a feedback string for the command-window's footer.
+        If for example a wrong command is entered, then an error message
+        is shown. Otherwise a quick help is displayed.
+
+        Returns:
+            list[tuple[str, str]]: The feedback for the command-line.
+        """
         if self._command_feedback is not None:
             text = [("class:warning", f" {self._command_feedback}")]
         else:

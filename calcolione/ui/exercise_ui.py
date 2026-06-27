@@ -139,7 +139,7 @@ class ExerciseUI(UI):
         return lines
 
     # TODO add commands 'next' and 'restart' and overwrite _handle_command
-    
+
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.
 
@@ -194,19 +194,47 @@ class ExerciseUI(UI):
         self.app.run()
     
     def load_exercise_and_init_feedback(self) -> None:
+        """Load an exercise from JSON and initialise the feedback to the hint state.
+        """
         self.exercise = Exercise.get_exercise_from_json()
         self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))            
     
     def get_question(self) -> list[tuple[str, str]]:
+        """Formats the `Exercise` question string with CSS.
+
+        Returns:
+            list[tuple[str, str]]: The formatted question.
+        """
         return [("class:question", f" {self.exercise.get_question()}")]
     
     def get_feedback(self) -> list[tuple[str, str]]:
+        """Getter for the feedback string.
+
+        Returns:
+            list[tiple[str, str]]: The feedback as a formatted text fragment.
+        """
         return self._feedback
     
     def set_feedback(self, feedback:list[tuple[str,str]]) -> None:
+        """Setter for the feedback string.
+
+        Args:
+            feedback (list[tuple[str,str]]): The formatted text fragment.
+        """
         self._feedback = feedback
 
     def generate_feedback(self, feedback_type:Feedback) -> list[tuple[str, str]]:
+        """Generates a feedback string according to the type of feedback provided.
+
+        Args:
+            feedback_type (Feedback): The type of feedback to generate an according string for.
+
+        Raises:
+            ValueError: Protects from updating the `Feedback` enum independently of this method.
+
+        Returns:
+            list[tuple[str, str]]: A font-formatted feedback string.
+        """
         if feedback_type is Feedback.HINT:
             feedback = [("class:hint", f" Enter your answer above.")]
         elif feedback_type is Feedback.CORRECT:
