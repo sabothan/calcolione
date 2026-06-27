@@ -138,6 +138,8 @@ class ExerciseUI(UI):
         lines.append(("class:dim", " Press Escape to close\n"))
         return lines
 
+    # TODO add commands 'next' and 'restart' and overwrite _handle_command
+    
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.
 

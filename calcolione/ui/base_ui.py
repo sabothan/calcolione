@@ -193,7 +193,6 @@ class UI(ABC):
         if cmd in self.COMMANDS["quit"]["cmd"]:
             get_app().exit()
         elif cmd in self.COMMANDS["help"]["cmd"]:
-            # TODO implement help display
             self._help_visible = not self._help_visible
             get_app().invalidate()
         else:
