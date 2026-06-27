@@ -118,7 +118,6 @@ class ExerciseUI(UI):
             list[tuple[str, str]]: Formatted text fragments for the help window.
         """
         lines = super()._help_content()  # keybindings + "Press Escape" line
-        lines = lines[:-1]              # drop "Press Escape" - re-added at the end
 
         lines.append(("class:label", " Answer format\n"))
         lines += [
@@ -135,7 +134,6 @@ class ExerciseUI(UI):
             ("class:hint", "   1% tolerance applied to evaluation\n"),
         ]
         lines.append(("", "\n"))
-        lines.append(("class:dim", " Press Escape to close\n"))
         return lines
 
     def _handle_command(self, buf: Buffer) -> bool:

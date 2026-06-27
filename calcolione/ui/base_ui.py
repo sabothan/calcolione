@@ -187,15 +187,21 @@ class UI(ABC):
 
         @self.kb.add("up", filter=Condition(lambda: self._help_visible))
         def scroll_help_up(event: object) -> None:
-            # Per <up-arrow> click, move the content of help-window up
-            self._help_scroll = max(0, self._help_scroll - 1)
+            if self._help_scroll == 0:
+                self._command_feedback = "Already at the top"
+            else:
+                self._command_feedback = None
+                self._help_scroll = max(0, self._help_scroll - 1)
             event.app.invalidate()  # type: ignore[attr-defined]
 
         @self.kb.add("down", filter=Condition(lambda: self._help_visible))
         def scroll_help_down(event: object) -> None:
-            # Per <down-arrow> click, move the content of help-window down
             max_scroll = max(0, len(self._help_content()) - 1)
-            self._help_scroll = min(max_scroll, self._help_scroll + 1)
+            if self._help_scroll >= max_scroll:
+                self._command_feedback = "Already at the bottom"
+            else:
+                self._command_feedback = None
+                self._help_scroll = min(max_scroll, self._help_scroll + 1)
             event.app.invalidate()  # type: ignore[attr-defined]
         
     def _handle_command(self, buf: Buffer) -> bool:
@@ -233,11 +239,12 @@ class UI(ABC):
         """
         if self._command_feedback is not None:
             text = [("class:warning", f" {self._command_feedback}")]
+        elif self._help_visible:
+            text = [("class:footer", " ↑ / ↓ to scroll   Esc to close")]
         else:
             text = [("class:footer", " Type `:` to enter command mode. E.g. `:help`")]
-        
         return text
-
+        
     def make_layout(self) -> Layout:
         """Assemble the full screen layout from shared chrome and the cached body.
 
@@ -310,5 +317,5 @@ class UI(ABC):
             cmds = " / ".join(f":{c}" for c in entry["cmd"])
             lines.append(("class:hint", f"   {cmds:<20} {entry['description']}\n"))
         lines.append(("", "\n"))
-        lines.append(("class:dim", " Press Escape to close\n"))
+        #lines.append(("class:dim", " Press Escape to close\n"))
         return lines
