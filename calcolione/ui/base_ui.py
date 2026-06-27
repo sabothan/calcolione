@@ -2,19 +2,16 @@
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Callable, Any
 
 from prompt_toolkit import PromptSession, Application
 from prompt_toolkit.application import get_app
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.document import Document
 from prompt_toolkit.filters import Condition, has_focus
-from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import ValidationError, Validator
-from prompt_toolkit.layout import Layout, ScrollablePane
-from prompt_toolkit.layout.containers import HSplit, VSplit, Window, ConditionalContainer, FloatContainer
+from prompt_toolkit.layout import Layout
+from prompt_toolkit.layout.containers import HSplit, Window, ConditionalContainer
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
 from ..exercise.exercise import Exercise
@@ -103,6 +100,7 @@ class UI(ABC):
     def __init__(self, screen_title: str) -> None:
         self._screen_title = screen_title
         self._help_visible : bool = False
+        self._help_scroll: int = 0
 
         self._session: PromptSession = PromptSession(  # type: ignore[type-arg]
             validator=AnswerFormatValidator(),
@@ -125,6 +123,7 @@ class UI(ABC):
             height=1,
             dont_extend_height=True,
         )
+        help_text = "".join(text for _, text in self._help_content())
 
         # Setup the command buffer and the keybindings
         self.command_buffer.accept_handler = self._handle_command
@@ -175,9 +174,25 @@ class UI(ABC):
         def close_help(event: object) -> None:
             """Close the help screen on Escape."""
             if self._help_visible:
+                # Reset visibility and the scrolling tracker on close
                 self._help_visible = False
+                self._help_scroll = 0
+
+                # Refocus and reload
                 event.app.layout.focus(self._default_focus_target)  # type: ignore[attr-defined]
                 event.app.invalidate()  # type: ignore[attr-defined]
+
+        
+        @self.kb.add("up", filter=Condition(lambda: self._help_visible))
+        def scroll_help_up(event: object) -> None:
+            self._help_scroll = max(0, self._help_scroll - 1)
+            event.app.invalidate()  # type: ignore[attr-defined]
+
+        @self.kb.add("down", filter=Condition(lambda: self._help_visible))
+        def scroll_help_down(event: object) -> None:
+            max_scroll = max(0, len(self._help_content()) - 1)
+            self._help_scroll = min(max_scroll, self._help_scroll + 1)
+            event.app.invalidate()  # type: ignore[attr-defined]
         
     def _handle_command(self, buf: Buffer) -> bool:
         """Dispatch a vim-style command entered in the command footer.
@@ -194,11 +209,12 @@ class UI(ABC):
             get_app().exit()
         elif cmd in self.COMMANDS["help"]["cmd"]:
             self._help_visible = not self._help_visible
+            self._help_scroll = 0 # Reset scroll tracker when toggling help off
             get_app().invalidate()
         else:
             self._command_feedback = f"Not a command/not implemented yet: {cmd}"
+            get_app().layout.focus(self._default_focus_target)
 
-        get_app().layout.focus(self._default_focus_target)
         buf.reset()
         return False
 
@@ -230,21 +246,13 @@ class UI(ABC):
             height=1,
         )
 
-        help_text = "".join(text for _, text in self._help_content())
-        help_buffer = Buffer(
-            document=Document(help_text),
-            read_only=True,
-            name="help",
-        )
         body_or_help_window = ConditionalContainer(
             content=self.body,
-            alternative_content=ScrollablePane(
-                content=Window(
-                    content=BufferControl(buffer=help_buffer, focusable=True),
-                    wrap_lines=True,
+            alternative_content=Window(
+                content=FormattedTextControl(
+                    lambda: self._help_content()[self._help_scroll:]
                 ),
-                show_scrollbar=True,
-                keep_cursor_visible=False,
+                wrap_lines=True,
             ),
             filter=Condition(lambda: not self._help_visible),
         )
