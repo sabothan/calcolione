@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import random
 
 from typing_extensions import Self  # PEP 673
 
@@ -18,20 +19,32 @@ class Exercise:
         self.answer = answer
 
     @classmethod
-    def get_exercise_from_json(cls, exercise_file:Path = EXERCISE_FILE) -> Self:
-        """Read an exercise from a template JSON file.
-        The template will be filled with randomised values.
+    def get_exercise_from_json(cls, exercise_file: Path = EXERCISE_FILE) -> Self:
+        """Read a random exercise from a JSON file.
 
         Args:
-            exercise_file(Path, optional): The path to the JSON file containing the exercises.
+            exercise_file (Path, optional): Path to the JSON file containing the exercises.
+
+        Returns:
+            Exercise: A randomly selected exercise.
+
+        Raises:
+            FileNotFoundError: If the exercise file does not exist.
+            ValueError: If the exercise file contains no exercises.
         """
-        if exercise_file.is_file():
-            with open(exercise_file) as file:
-                exercise = json.load(file)
-        else:
+        if not exercise_file.is_file():
             raise FileNotFoundError(f"The JSON file at {exercise_file} cannot be found")
 
+        with open(exercise_file) as file:
+            data = json.load(file)
+
+        exercises = data["exercises"]
+        if not exercises:
+            raise ValueError(f"No exercises found in {exercise_file}")
+
         # TODO implement randomising values
+        # TODO implement filtering by difficulty and category
+        exercise = random.choice(exercises)
 
         return cls(
             question=Question.from_dict(exercise["question"], vars=exercise["vars"]),
