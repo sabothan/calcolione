@@ -138,7 +138,30 @@ class ExerciseUI(UI):
         lines.append(("class:dim", " Press Escape to close\n"))
         return lines
 
-    # TODO add commands 'next' and 'restart' and overwrite _handle_command
+    def _handle_command(self, buf: Buffer) -> bool:
+        """Dispatch commands, extending base UI with exercise-specific commands.
+
+        Args:
+            buf (Buffer): The command buffer.
+
+        Returns:
+            bool: False to clear the buffer after submission.
+        """
+        cmd = buf.text.strip().lstrip(":")
+        if cmd in self.COMMANDS["next"]["cmd"]:
+            self.load_exercise_and_init_feedback()
+            get_app().layout.focus(self._default_focus_target)
+            get_app().invalidate()
+        elif cmd in self.COMMANDS["restart"]["cmd"]:
+            # TODO: reload the same exercise by ID once filtering is implemented
+            self.load_exercise_and_init_feedback()
+            get_app().layout.focus(self._default_focus_target)
+            get_app().invalidate()
+        else:
+            return super()._handle_command(buf)
+
+        buf.reset()
+        return False
 
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.
@@ -196,8 +219,9 @@ class ExerciseUI(UI):
     def load_exercise_and_init_feedback(self) -> None:
         """Load an exercise from JSON and initialise the feedback to the hint state.
         """
-        self.exercise = Exercise.get_exercise_from_json()
-        self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))            
+        current_id = getattr(self, "exercise", None) and self.exercise.id if hasattr(self, "exercise") else None
+        self.exercise = Exercise.get_exercise_from_json(exclude_id=current_id)
+        self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))
     
     def get_question(self) -> list[tuple[str, str]]:
         """Formats the `Exercise` question string with CSS.
@@ -238,7 +262,7 @@ class ExerciseUI(UI):
         if feedback_type is Feedback.HINT:
             feedback = [("class:hint", f" Enter your answer above.")]
         elif feedback_type is Feedback.CORRECT:
-            feedback = [("class:correct", f" Correct.")]
+            feedback = [("class:correct", f" Correct! Type `:next` for the next exercise.")]
         elif feedback_type is Feedback.WRONG:
             feedback = [("class:wrong", f" Wrong! Try again.")]
         elif feedback_type is Feedback.ERROR_UNDEFINED_UNIT:

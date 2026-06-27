@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 from pathlib import Path
 import random
@@ -14,16 +15,18 @@ class Exercise:
     Implements downstream methods for user interaction.
     """
 
-    def __init__(self, question: Question, answer: Answer):
+    def __init__(self, question: Question, answer: Answer, exercise_id: str):
         self.question = question
         self.answer = answer
+        self.id = exercise_id
 
     @classmethod
-    def get_exercise_from_json(cls, exercise_file: Path = EXERCISE_FILE) -> Self:
+    def get_exercise_from_json(cls, exercise_file: Path = EXERCISE_FILE, exclude_id: str | None = None) -> Self:
         """Read a random exercise from a JSON file.
 
         Args:
             exercise_file (Path, optional): Path to the JSON file containing the exercises.
+            exclude_id (str, optional): The ID of the exercise that shall NOT be loaded.
 
         Returns:
             Exercise: A randomly selected exercise.
@@ -44,11 +47,15 @@ class Exercise:
 
         # TODO implement randomising values
         # TODO implement filtering by difficulty and category
+        candidates = [e for e in exercises if e["id"] != exclude_id] if exclude_id else exercises
+        if not candidates:
+            candidates = exercises  # fallback if only one exercise exists
         exercise = random.choice(exercises)
 
         return cls(
             question=Question.from_dict(exercise["question"], vars=exercise["vars"]),
             answer=Answer.from_dict(answer=exercise["answer"], vars=exercise["vars"]),
+            exercise_id=exercise["id"],
         )
 
     def get_question(self) -> str:
