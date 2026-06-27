@@ -4,7 +4,7 @@ from typing import TypeVar, Callable, Any
 from pint import UnitRegistry
 from typing_extensions import Self  # PEP 673
 
-from .utils import QUANTITY_FORMAT_SPECIFIER
+from ..utils import QUANTITY_FORMAT_SPECIFIER
 
 # Define the unit registry
 unit = UnitRegistry()

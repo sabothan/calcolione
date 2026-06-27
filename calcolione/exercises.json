@@ -1,29 +1,312 @@
 {
-    "question": {
-        "message": "A car travels at {v_car.value}. How much distance does it cover in {t_car.value}?"
-    },
-    "vars": [
+    "exercises": [
         {
-            "name": "v_car",
-            "description": "Velocity of a traveling car.",
-            "quantity_type": "velocity",
-            "value": "14 km/h"
+            "id": "kinematics_001",
+            "difficulty": 1,
+            "category": "kinematics",
+            "question": {
+                "message": "A car travels at {v_car.value}. How much distance does it cover in {t_car.value}?"
+            },
+            "vars": [
+                {
+                    "name": "v_car",
+                    "description": "Velocity of a traveling car.",
+                    "quantity_type": "velocity",
+                    "value": "14 km/h"
+                },
+                {
+                    "name": "t_car",
+                    "description": "Travel-time of the car.",
+                    "quantity_type": "time",
+                    "value": "25 min"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{v_car.value} * {t_car.value}",
+                "result": {
+                    "name": "s_car",
+                    "description": "Distance covered by the car.",
+                    "quantity_type": "distance",
+                    "value": ""
+                }
+            }
         },
         {
-            "name": "t_car",
-            "description": "Travel-time of the car.",
-            "quantity_type": "time",
-            "value": "25 min"
+            "id": "kinematics_002",
+            "difficulty": 2,
+            "category": "kinematics",
+            "question": {
+                "message": "A cyclist covers {d_cyclist.value} in {t_cyclist.value}. What is the average speed in km/h?"
+            },
+            "vars": [
+                {
+                    "name": "d_cyclist",
+                    "description": "Distance covered by the cyclist.",
+                    "quantity_type": "distance",
+                    "value": "18 km"
+                },
+                {
+                    "name": "t_cyclist",
+                    "description": "Travel time of the cyclist.",
+                    "quantity_type": "time",
+                    "value": "36 min"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{d_cyclist.value} / {t_cyclist.value}",
+                "result": {
+                    "name": "v_cyclist",
+                    "description": "Average speed of the cyclist.",
+                    "quantity_type": "velocity",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "kinematics_003",
+            "difficulty": 3,
+            "category": "kinematics",
+            "question": {
+                "message": "An object is dropped from rest and falls freely for {t_fall.value}. Using g = {g.value}, what is its final velocity?"
+            },
+            "vars": [
+                {
+                    "name": "t_fall",
+                    "description": "Duration of free fall.",
+                    "quantity_type": "time",
+                    "value": "4 s"
+                },
+                {
+                    "name": "g",
+                    "description": "Gravitational acceleration.",
+                    "quantity_type": "acceleration",
+                    "value": "9.81 m/s^2"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{g.value} * {t_fall.value}",
+                "result": {
+                    "name": "v_fall",
+                    "description": "Final velocity after free fall.",
+                    "quantity_type": "velocity",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "unit_conversion_001",
+            "difficulty": 1,
+            "category": "unit_conversion",
+            "question": {
+                "message": "Convert {v_kmh.value} to m/s."
+            },
+            "vars": [
+                {
+                    "name": "v_kmh",
+                    "description": "Speed in km/h to be converted.",
+                    "quantity_type": "velocity",
+                    "value": "72 km/h"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{v_kmh.value}",
+                "result": {
+                    "name": "v_ms",
+                    "description": "Speed in m/s.",
+                    "quantity_type": "velocity",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "unit_conversion_002",
+            "difficulty": 2,
+            "category": "unit_conversion",
+            "question": {
+                "message": "Convert {e_kwh.value} to joules."
+            },
+            "vars": [
+                {
+                    "name": "e_kwh",
+                    "description": "Energy in kilowatt-hours.",
+                    "quantity_type": "energy",
+                    "value": "5.5 kWh"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{e_kwh.value}",
+                "result": {
+                    "name": "e_j",
+                    "description": "Energy in joules.",
+                    "quantity_type": "energy",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "mechanics_001",
+            "difficulty": 2,
+            "category": "mechanics",
+            "question": {
+                "message": "A mass of {m.value} accelerates at {a.value}. What is the net force acting on it? (F = m * a)"
+            },
+            "vars": [
+                {
+                    "name": "m",
+                    "description": "Mass of the object.",
+                    "quantity_type": "mass",
+                    "value": "12 kg"
+                },
+                {
+                    "name": "a",
+                    "description": "Acceleration of the object.",
+                    "quantity_type": "acceleration",
+                    "value": "3.5 m/s^2"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{m.value} * {a.value}",
+                "result": {
+                    "name": "F",
+                    "description": "Net force on the object.",
+                    "quantity_type": "force",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "mechanics_002",
+            "difficulty": 3,
+            "category": "mechanics",
+            "question": {
+                "message": "A car of mass {m_car.value} moves at {v_car.value}. What is its kinetic energy? (Ek = 0.5 * m * v^2)"
+            },
+            "vars": [
+                {
+                    "name": "m_car",
+                    "description": "Mass of the car.",
+                    "quantity_type": "mass",
+                    "value": "850 kg"
+                },
+                {
+                    "name": "v_car",
+                    "description": "Speed of the car.",
+                    "quantity_type": "velocity",
+                    "value": "20 m/s"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "0.5 * {m_car.value} * {v_car.value} * {v_car.value}",
+                "result": {
+                    "name": "Ek",
+                    "description": "Kinetic energy of the car.",
+                    "quantity_type": "energy",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "electricity_001",
+            "difficulty": 2,
+            "category": "electricity",
+            "question": {
+                "message": "A current of {I.value} flows through a resistor of {R.value}. What is the voltage across it? (V = I * R)"
+            },
+            "vars": [
+                {
+                    "name": "I",
+                    "description": "Current through the resistor.",
+                    "quantity_type": "current",
+                    "value": "0.3 A"
+                },
+                {
+                    "name": "R",
+                    "description": "Resistance of the resistor.",
+                    "quantity_type": "resistance",
+                    "value": "47 ohm"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{I.value} * {R.value}",
+                "result": {
+                    "name": "V",
+                    "description": "Voltage across the resistor.",
+                    "quantity_type": "voltage",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "electricity_002",
+            "difficulty": 3,
+            "category": "electricity",
+            "question": {
+                "message": "A resistor of {R.value} has a voltage of {V.value} across it. What is the power dissipated? (P = V^2 / R)"
+            },
+            "vars": [
+                {
+                    "name": "R",
+                    "description": "Resistance of the resistor.",
+                    "quantity_type": "resistance",
+                    "value": "220 ohm"
+                },
+                {
+                    "name": "V",
+                    "description": "Voltage across the resistor.",
+                    "quantity_type": "voltage",
+                    "value": "12 V"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{V.value} * {V.value} / {R.value}",
+                "result": {
+                    "name": "P",
+                    "description": "Power dissipated by the resistor.",
+                    "quantity_type": "power",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "id": "electricity_003",
+            "difficulty": 4,
+            "category": "electricity",
+            "question": {
+                "message": "A capacitor of {C.value} is charged to {V.value}. What is the charge stored on it? (Q = C * V)"
+            },
+            "vars": [
+                {
+                    "name": "C",
+                    "description": "Capacitance of the capacitor.",
+                    "quantity_type": "capacitance",
+                    "value": "470 uF"
+                },
+                {
+                    "name": "V",
+                    "description": "Voltage across the capacitor.",
+                    "quantity_type": "voltage",
+                    "value": "9 V"
+                }
+            ],
+            "answer": {
+                "answer_type": "numeric",
+                "calculation": "{C.value} * {V.value}",
+                "result": {
+                    "name": "Q",
+                    "description": "Charge stored on the capacitor.",
+                    "quantity_type": "charge",
+                    "value": ""
+                }
+            }
         }
-    ],
-    "answer": {
-        "answer_type": "numeric",
-        "calculation": "{v_car.value} * {t_car.value}",
-        "result": {
-            "name": "s_car",
-            "description": "Distance of a traveling car.",
-            "quantity_type": "distance",
-            "value": ""
-        }
-    }
+    ]
 }

@@ -1,0 +1,89 @@
+{
+    "description": "Test inputs for calcolione exercise runner",
+    "cases": [
+        {
+            "id": "correct_si",
+            "description": "Correct answer in SI units (meters)",
+            "input": "5833.333 m",
+            "expected_outcome": "correct"
+        },
+        {
+            "id": "correct_km",
+            "description": "Correct answer in km (non-SI, should still evaluate correctly)",
+            "input": "5.833 km",
+            "expected_outcome": "correct"
+        },
+        {
+            "id": "wrong_value",
+            "description": "Wrong numeric value, correct unit",
+            "input": "99 m",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "wrong_unit",
+            "description": "Correct value but wrong unit dimension",
+            "input": "5.833 m/s",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "empty_input",
+            "description": "Empty string - should be ignored",
+            "input": "",
+            "expected_outcome": "no_change"
+        },
+        {
+            "id": "error_undefined_unit",
+            "description": "Unknown unit token",
+            "input": "1234 masdf",
+            "expected_outcome": "error_undefined_unit"
+        },
+        {
+            "id": "error_undefined_unit_2",
+            "description": "Pure non-unit string",
+            "input": "abc",
+            "expected_outcome": "error_invalid_format"
+        },
+        {
+            "id": "error_assertion",
+            "description": "Malformed expression triggering AssertionError in pint",
+            "input": "5 km//",
+            "expected_outcome": "error_assertion"
+        },
+        {
+            "id": "error_offset_unit",
+            "description": "Offset unit used in multiplicative context",
+            "input": "5 degC",
+            "expected_outcome": "error_offset_unit"
+        },
+        {
+            "id": "pint_silent_accept_1",
+            "description": "Adjacent numerics - pint treats as implicit multiplication (5*5 km = 25 km)",
+            "input": "5 5 km",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "pint_silent_accept_2",
+            "description": "Compound unit - valid physics expression (km*h), wrong dimensions",
+            "input": "5 km h",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "negative_value",
+            "description": "Negative answer",
+            "input": "-5 m",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "no_unit",
+            "description": "Numeric only, no unit",
+            "input": "5.833",
+            "expected_outcome": "wrong"
+        },
+        {
+            "id": "error_invalid_format_asdf",
+            "description": "Letter-only string with no leading digit",
+            "input": "asdf",
+            "expected_outcome": "error_invalid_format"
+    }
+    ]
+}

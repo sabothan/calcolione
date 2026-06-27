@@ -105,3 +105,117 @@ mypy .              # type-check
 ```
 
 Order matters: format before lint, otherwise ruff check may flag issues the formatter would have resolved.
+
+## Overwiew over the code
+
+```mermaid
+classDiagram
+    class QVar {
+        +str name
+        +str description
+        +str quantity_type
+        +Quantity quantity
+        +from_dict(variable) QVar
+        +_convert_to_si_units() QVar
+        +__str__() str
+        +__add__(other) QVar
+        +__sub__(other) QVar
+        +__mul__(other) QVar
+        +__truediv__(other) QVar
+        +__eq__(other) bool
+        +__lt__(other) bool
+    }
+
+    class Answer {
+        +QVar my_answer
+        +QVar result
+        +list vars
+        +from_dict(answer, vars) Answer
+        +_calculate_answer(result) QVar
+        +_input_answer(answer)
+        +_parse(answer) QVar
+        +_parse_numeric(answer) QVar
+        +_parse_expression(answer)
+        +evaluate_answer() bool
+    }
+
+    class Question {
+        +str message
+        +list vars
+        +from_dict(question, vars) Question
+        +_render_message() str
+        +_get_question() str
+    }
+
+    class Exercise {
+        +Question question
+        +Answer answer
+        +get_exercise_from_json(exercise_file) Exercise
+        +get_question() str
+        +input_answer(answer)
+        +evaluate_answer() bool
+    }
+
+    class UI {
+        <<abstract>>
+        +dict COMMANDS
+        +KeyBindings kb
+        +HSplit body
+        +Buffer command_buffer
+        +Application app
+        +bool _help_visible
+        +int _help_scroll
+        +_default_focus_target Buffer*
+        +make_body() HSplit*
+        +_register_keybindings()
+        +_handle_command(buf) bool
+        +_footer_text() list
+        +make_layout() Layout
+        +_help_content() list
+    }
+
+    class ExerciseUI {
+        +dict COMMANDS
+        +Buffer answer_buffer
+        +Exercise exercise
+        +list _feedback
+        +_default_focus_target Buffer
+        +make_body() HSplit
+        +_register_keybindings()
+        +_handle_answer(buf) bool
+        +_help_content() list
+        +run()
+        +load_exercise_and_init_feedback()
+        +get_question() list
+        +get_feedback() list
+        +set_feedback(feedback)
+        +generate_feedback(feedback_type) list
+    }
+
+    class Feedback {
+        <<enumeration>>
+        HINT
+        CORRECT
+        WRONG
+        ERROR_UNDEFINED_UNIT
+        ERROR_DIMENSIONALITY
+        ERROR_OFFSET_UNIT
+        ERROR_ASSERTION
+        ERROR_UNEXPECTED
+        ERROR_INVALID_FORMAT
+    }
+
+    class InvalidInputFormatError {
+        <<exception>>
+    }
+
+    QVar --* Answer : owns
+    QVar --* Question : owns
+    Answer --* Exercise : owns
+    Question --* Exercise : owns
+    UI <|-- ExerciseUI : inherits
+    Exercise --o ExerciseUI : uses
+    Feedback --o ExerciseUI : uses
+    InvalidInputFormatError --|> ValueError : extends
+    InvalidInputFormatError --o Answer : raised by
+```

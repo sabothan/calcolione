@@ -1,13 +1,16 @@
 from __future__ import annotations
 from typing_extensions import Self  # PEP 673
 import re
+from math import isclose
 
-from calcolione.qvar import QVar
-from calcolione.utils import (
-    ANSWER_TOLERANCE,
+from .qvar import QVar
+from ..utils import (
+    ANSWER_ABS_TOLERANCE,
+    ANSWER_REL_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
     ALLOWED_SYMBOLS,
-    substitute_placeholders
+    substitute_placeholders,
+    InvalidInputFormatError,
 )
 
 
@@ -55,29 +58,17 @@ class Answer:
             quantity_type=result.quantity_type,
         )._convert_to_si_units()
         
+    def _input_answer(self, answer: str) -> None:
+        """Parse and store an answer from a pre-validated string.
 
-    def _input_answer(self) -> None:
-        """Prompts the user to input an answer.
-        The answer will be parsed into a pint.Quantity(numeric, unit) object,
-        which will be stored in the the class's `self.my_answer`.
+        Used by the UI layer, which owns input collection and format validation.
+        The string is expected to have already passed ``ALLOWED_SYMBOLS`` validation.
+
+        Args:
+            answer (str): The raw answer string provided by the user.
         """
-        allowed = False
-        while(not allowed):
-            # Prompt an answer
-            my_answer: str = input("Answer: ")
-
-            # Check input for allowed symbols
-            allowed = bool(ALLOWED_SYMBOLS.match(my_answer))
-            if not allowed:
-                print(" --> SyntaxError: Try again <-- ")
-
-        # Parse the answer into numeric and unit and pack into QVar
-        parsed_answer = self._parse(my_answer)
-
-        # Manually set the quantity_type of the given answer
+        parsed_answer = self._parse(answer)
         parsed_answer.quantity_type = self.result.quantity_type
-
-        # Write the parsed answer to the dedicated variable
         self.my_answer = parsed_answer
 
     def _parse(self, answer: str) -> QVar:
@@ -127,8 +118,7 @@ class Answer:
 
         # Handle incompatible anwers
         if not match:
-            # TODO handle incompatible formats
-            return QVar()
+            raise InvalidInputFormatError(f"Expected a number followed by a unit, got: {answer!r}")
 
         # Convert the input string into a QVar
         parsed_answer = QVar(
@@ -162,5 +152,9 @@ class Answer:
         given_answer = self.my_answer.quantity.to_base_units().magnitude
         correct_answer = self.result.quantity.to_base_units().magnitude
 
-        # TODO implement more stable approach to evaluate the answer's correctness
-        return abs(given_answer - correct_answer) <= ANSWER_TOLERANCE
+        return isclose(
+            a=given_answer,
+            b=correct_answer,
+            abs_tol=ANSWER_ABS_TOLERANCE,
+            rel_tol=ANSWER_REL_TOLERANCE,
+        )
