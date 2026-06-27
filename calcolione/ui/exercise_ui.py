@@ -33,6 +33,17 @@ class Feedback(Enum):
 class ExerciseUI(UI):
     """Exercise screen - displays a question and accepts the user's answer."""
 
+    COMMANDS = {
+        **UI.COMMANDS,
+        "next": {
+            "cmd": ["n", "next"],
+            "description": "Go to next exercise.",
+        },
+        "restart": {
+            "cmd": ["restart"],
+            "description": "Restart this exercise from scratch.",
+        },
+    }
     def __init__(self) -> None:
         # answer_buffer and question must exist before super().__init__()
         # because make_body (called by the base class) references them.
@@ -66,7 +77,7 @@ class ExerciseUI(UI):
             buf.reset()
             return False
 
-        
+        # Catch pint-specific errors and set the feedback accordingly
         try:
             self.exercise.input_answer(answer=answer)
         except UndefinedUnitError:
@@ -99,6 +110,33 @@ class ExerciseUI(UI):
 
         buf.reset()
         return False
+    
+    def _help_content(self) -> list[tuple[str, str]]:
+        """Return help text including exercise-specific sections.
+
+        Returns:
+            list[tuple[str, str]]: Formatted text fragments for the help window.
+        """
+        lines = super()._help_content()  # keybindings + "Press Escape" line
+        lines = lines[:-1]              # drop "Press Escape" - re-added at the end
+
+        lines.append(("class:label", " Answer format\n"))
+        lines += [
+            ("class:hint", "   <number> <unit>       e.g. 5.833 km, 99 m, 3.5 m/s\n"),
+            ("class:hint", "   Negative values        e.g. -5 m\n"),
+            ("class:hint", "   Unit-less              e.g. 9.8  (dimensionless answers)\n"),
+        ]
+        lines.append(("", "\n"))
+
+        lines.append(("class:label", " Behaviors to be aware of\n"))
+        lines += [
+            ("class:hint", "   Adjacent numerics are multiplied:  5 5 km = 25 km\n"),
+            ("class:hint", "   Compound units are valid:          5 km h = 5 km*h\n"),
+            ("class:hint", "   1% tolerance applied to evaluation\n"),
+        ]
+        lines.append(("", "\n"))
+        lines.append(("class:dim", " Press Escape to close\n"))
+        return lines
 
     def make_body(self) -> HSplit:
         """Build the exercise content: question, input row, and feedback line.

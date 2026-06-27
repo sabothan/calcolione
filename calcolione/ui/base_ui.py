@@ -7,13 +7,14 @@ from typing import Callable, Any
 from prompt_toolkit import PromptSession, Application
 from prompt_toolkit.application import get_app
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.document import Document
 from prompt_toolkit.filters import Condition, has_focus
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import ValidationError, Validator
-from prompt_toolkit.layout import Layout
-from prompt_toolkit.layout.containers import HSplit, VSplit, Window
+from prompt_toolkit.layout import Layout, ScrollablePane
+from prompt_toolkit.layout.containers import HSplit, VSplit, Window, ConditionalContainer, FloatContainer
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
 from ..exercise.exercise import Exercise
@@ -66,6 +67,8 @@ class AnswerFormatValidator(Validator):
             )
 
 
+
+
 # ---------------------------------------------------------------------------
 # UI base class
 # ---------------------------------------------------------------------------
@@ -86,9 +89,20 @@ class UI(ABC):
            bindings are registered when the app starts.
         4. `Application` - constructed last, consuming the layout.
     """
+    COMMANDS = {
+        "quit": {
+            "cmd": ["q", "quit"],
+            "description": "Exit the application",
+        },
+        "help": {
+            "cmd": ["h", "help"],
+            "description": "Show/hide help information",
+        },
+    }
 
     def __init__(self, screen_title: str) -> None:
         self._screen_title = screen_title
+        self._help_visible : bool = False
 
         self._session: PromptSession = PromptSession(  # type: ignore[type-arg]
             validator=AnswerFormatValidator(),
@@ -109,6 +123,7 @@ class UI(ABC):
         self._command_window: Window = Window(
             content=BufferControl(buffer=self.command_buffer),
             height=1,
+            dont_extend_height=True,
         )
 
         # Setup the command buffer and the keybindings
@@ -156,6 +171,14 @@ class UI(ABC):
         def submit_command(event: object) -> None:
             self.command_buffer.validate_and_handle()
         
+        @self.kb.add("escape", eager=True)
+        def close_help(event: object) -> None:
+            """Close the help screen on Escape."""
+            if self._help_visible:
+                self._help_visible = False
+                event.app.layout.focus(self._default_focus_target)  # type: ignore[attr-defined]
+                event.app.invalidate()  # type: ignore[attr-defined]
+        
     def _handle_command(self, buf: Buffer) -> bool:
         """Dispatch a vim-style command entered in the command footer.
 
@@ -167,13 +190,14 @@ class UI(ABC):
         """
         cmd = buf.text.strip().lstrip(":")
 
-        if cmd in ("q", "quit"):
+        if cmd in self.COMMANDS["quit"]["cmd"]:
             get_app().exit()
-        elif cmd in ("h", "help"):
+        elif cmd in self.COMMANDS["help"]["cmd"]:
             # TODO implement help display
-            pass
+            self._help_visible = not self._help_visible
+            get_app().invalidate()
         else:
-            self._command_feedback = f"Not a command: {cmd}"
+            self._command_feedback = f"Not a command/not implemented yet: {cmd}"
 
         get_app().layout.focus(self._default_focus_target)
         buf.reset()
@@ -183,7 +207,7 @@ class UI(ABC):
         if self._command_feedback is not None:
             text = [("class:warning", f" {self._command_feedback}")]
         else:
-            text = [("class:footer", " Type `:` to enter command mode")]
+            text = [("class:footer", " Type `:` to enter command mode. E.g. `:help`")]
         
         return text
 
@@ -207,13 +231,32 @@ class UI(ABC):
             height=1,
         )
 
+        help_text = "".join(text for _, text in self._help_content())
+        help_buffer = Buffer(
+            document=Document(help_text),
+            read_only=True,
+            name="help",
+        )
+        body_or_help_window = ConditionalContainer(
+            content=self.body,
+            alternative_content=ScrollablePane(
+                content=Window(
+                    content=BufferControl(buffer=help_buffer, focusable=True),
+                    wrap_lines=True,
+                ),
+                show_scrollbar=True,
+                keep_cursor_visible=False,
+            ),
+            filter=Condition(lambda: not self._help_visible),
+        )
+
         root = HSplit([
             header,
             title,
             divider,
             Window(height=1),
-            self.body,          # cached - never rebuilt after __init__
-            Window(height=0),   # fills remaining vertical space
+            body_or_help_window,
+            Window(),   # fills remaining vertical space
             divider,
             footer,
             self._command_window,
@@ -231,5 +274,22 @@ class UI(ABC):
             HSplit: The screen content.
         """
         ...
-
-
+    
+    def _help_content(self) -> list[tuple[str, str]]:
+        """Return formatted help text for this screen.
+ 
+        Renders the COMMANDS registry. Subclasses should call super() and
+        extend with screen-specific sections.
+ 
+        Returns:
+            list[tuple[str, str]]: Formatted text fragments for the help window.
+        """
+        lines: list[tuple[str, str]] = [
+            ("class:label", " Keybindings\n"),
+        ]
+        for entry in self.COMMANDS.values():
+            cmds = " / ".join(f":{c}" for c in entry["cmd"])
+            lines.append(("class:hint", f"   {cmds:<20} {entry['description']}\n"))
+        lines.append(("", "\n"))
+        lines.append(("class:dim", " Press Escape to close\n"))
+        return lines
