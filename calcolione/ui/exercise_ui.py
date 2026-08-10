@@ -19,6 +19,8 @@ log = get_logger(__name__)
 
 
 class Feedback(Enum):
+    """Classification of the various types of feedback."""
+
     HINT = 1
     CORRECT = 2
     WRONG = 3
@@ -224,6 +226,7 @@ class ExerciseUI(UI):
         )
 
     def run(self) -> None:
+        """Run the UI."""
         self.app.run()
 
     def load_exercise_and_init_feedback(self) -> None:
@@ -260,10 +263,12 @@ class ExerciseUI(UI):
         """Generates a feedback string according to the type of feedback provided.
 
         Args:
-            feedback_type (Feedback): The type of feedback to generate an according string for.
+            feedback_type (Feedback): The type of feedback to generate
+                                      an according string for.
 
         Raises:
-            ValueError: Protects from updating the `Feedback` enum independently of this method.
+            ValueError: Protects from updating the `Feedback` enum independently
+                        of this method.
 
         Returns:
             list[tuple[str, str]]: A font-formatted feedback string.

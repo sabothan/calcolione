@@ -48,8 +48,8 @@ class Answer:
             vars=[QVar.from_dict(var) for var in vars],
         )
 
-    def _calculate_answer(self, result: QVar):
-        """Converts the template solution into a calculation and 
+    def _calculate_answer(self, result: QVar) -> QVar:
+        """Converts the template solution into a calculation and
         computes the correct answer from it.
 
         Args:
@@ -108,7 +108,7 @@ class Answer:
         else:
             raise ValueError(f"Unknown answer type: '{self._answer_type}'")
 
-        return parsed_answer # type: ignore
+        return parsed_answer  # type: ignore
 
     def _parse_numeric(self, answer: str) -> QVar:
         """Parses a numeric answer string into a value and an optional unit.

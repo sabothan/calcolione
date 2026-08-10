@@ -23,6 +23,10 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def require_same_quantity_type(f: F) -> F:
+    """Decorator function to ensure that, when applying operation on
+    two qvars, the operation is supported based on their units.
+    """
+
     @wraps(f)
     def wrapper(self: QVar, other: QVar) -> Any:
         if not isinstance(other, QVar):

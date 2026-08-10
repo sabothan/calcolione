@@ -19,7 +19,8 @@ class Question:
         """Serves as an additional constructor, but with input from a `dict`.
 
         Args:
-            question (dict): the input dictionary
+            question (dict): the input dictionary.
+            vars (list): the input variables for the question.
 
         Returns:
             Question: The instantiated class.

@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import json
 import random
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from typing_extensions import Self  # PEP 673
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 from ..utils import EXERCISE_FILE
 from .answer import Answer

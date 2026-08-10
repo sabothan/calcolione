@@ -60,7 +60,7 @@ class AnswerFormatValidator(Validator):
         text = document.text  # type: ignore[attr-defined]
         if text and not ALLOWED_SYMBOLS.match(text):
             raise ValidationError(
-                message="Invalid characters - use digits, units (km, m/s ...), +, -, *, /",
+                message="Invalid characters - use digits, units (m/s, ...), +, -, *, /",
                 cursor_position=len(text),
             )
 

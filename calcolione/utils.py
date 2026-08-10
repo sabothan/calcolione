@@ -29,7 +29,6 @@ ANSWER_ABS_TOLERANCE = 1e-9  # fallback for near-zero values
 
 # Quantity format specifier
 QUANTITY_FORMAT_SPECIFIER = "~P"  # short, pretty
-# QUANTITY_FORMAT_SPECIFIER = "~#P"   # short, compact, pretty (does type conversions: 1000m -> 1km)
 
 # Path to the JSON exercise file
 EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"
@@ -38,7 +37,7 @@ EXERCISE_FILE = Path(__file__).resolve().parent / "exercises.json"
 LOG_FILE = Path.home() / ".local" / "share" / "calcolione" / "calcolione.log"
 
 
-def substitute_placeholders(vars: list, body: str):
+def substitute_placeholders(vars: list, body: str) -> str:
     """Substitutes the actual values for the placeholders in a question's body.
 
     Args:
