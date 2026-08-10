@@ -14,26 +14,29 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 # Allow running from the project root without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pint.errors import UndefinedUnitError, DimensionalityError, OffsetUnitCalculusError
+from pint.errors import DimensionalityError, OffsetUnitCalculusError, UndefinedUnitError
 
 from calcolione.exercise.exercise import Exercise
 from calcolione.ui.base_ui import STYLE
-from calcolione.utils import EXERCISE_FILE, LOG_FILE, get_logger, InvalidInputFormatError
+from calcolione.utils import (
+    EXERCISE_FILE,
+    LOG_FILE,
+    InvalidInputFormatError,
+    get_logger,
+)
 
 log = get_logger(__name__)
 
 # Map prompt_toolkit class names to their hex color specs from STYLE.
 # Strips the "class:" prefix for lookup.
-COLOR_MAP: dict[str, str] = {
-    key: val for key, val in STYLE.style_rules
-}
+COLOR_MAP: dict[str, str] = {key: val for key, val in STYLE.style_rules}
 
 DEFAULT_INPUTS_FILE = Path(__file__).resolve().parent / "test_inputs.json"
 
@@ -41,6 +44,7 @@ DEFAULT_INPUTS_FILE = Path(__file__).resolve().parent / "test_inputs.json"
 # ---------------------------------------------------------------------------
 # Result dataclass
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class CaseResult:
@@ -62,6 +66,7 @@ class CaseResult:
 # Outcome resolution
 # ---------------------------------------------------------------------------
 
+
 def _resolve_outcome(
     answer: str,
     exercise: Exercise,
@@ -81,17 +86,53 @@ def _resolve_outcome(
     try:
         exercise.input_answer(answer=answer)
     except UndefinedUnitError as e:
-        return "error_undefined_unit", "class:error", "Unknown unit", "UndefinedUnitError", str(e)
+        return (
+            "error_undefined_unit",
+            "class:error",
+            "Unknown unit",
+            "UndefinedUnitError",
+            str(e),
+        )
     except DimensionalityError as e:
-        return "error_dimensionality", "class:error", "Incompatible dimensions", "DimensionalityError", str(e)
+        return (
+            "error_dimensionality",
+            "class:error",
+            "Incompatible dimensions",
+            "DimensionalityError",
+            str(e),
+        )
     except OffsetUnitCalculusError as e:
-        return "error_offset_unit", "class:error", "Offset units not supported here", "OffsetUnitCalculusError", str(e)
+        return (
+            "error_offset_unit",
+            "class:error",
+            "Offset units not supported here",
+            "OffsetUnitCalculusError",
+            str(e),
+        )
     except AssertionError as e:
-        return "error_assertion", "class:error", "Malformed expression", "AssertionError", str(e)
+        return (
+            "error_assertion",
+            "class:error",
+            "Malformed expression",
+            "AssertionError",
+            str(e),
+        )
     except InvalidInputFormatError as e:
-        return "error_invalid_format", "class:error", "Invalid format - expected numeric followed by unit", "InvalidInputFormatError", str(e)
+        return (
+            "error_invalid_format",
+            "class:error",
+            "Invalid format - expected numeric followed by unit",
+            "InvalidInputFormatError",
+            str(e),
+        )
     except Exception as e:
-        return "error_unexpected", "class:error", "Unexpected error", type(e).__name__, str(e)
+        return (
+            "error_unexpected",
+            "class:error",
+            "Unexpected error",
+            type(e).__name__,
+            str(e),
+        )
 
     is_correct = exercise.evaluate_answer()
     if is_correct:
@@ -103,6 +144,7 @@ def _resolve_outcome(
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
+
 
 def run_tests(inputs_file: Path, exercise_file: Path) -> list[CaseResult]:
     """Run all test cases from the inputs JSON file.
@@ -136,7 +178,9 @@ def run_tests(inputs_file: Path, exercise_file: Path) -> list[CaseResult]:
         answer = case["input"]
         expected = case["expected_outcome"]
 
-        actual, fb_class, fb_text, exc_type, exc_msg = _resolve_outcome(answer, exercise)
+        actual, fb_class, fb_text, exc_type, exc_msg = _resolve_outcome(
+            answer, exercise
+        )
         matched = (actual == expected) or (expected == "unknown")
 
         result = CaseResult(
@@ -171,7 +215,10 @@ def _log_result(r: CaseResult) -> None:
     log.info("  expected outcome : %s", r.expected_outcome)
     log.info("  actual outcome   : %s", r.actual_outcome)
     log.info("  feedback class   : %s", r.feedback_class)
-    log.info("  feedback color   : %s", COLOR_MAP.get(r.feedback_class.removeprefix("class:"), "unknown"))
+    log.info(
+        "  feedback color   : %s",
+        COLOR_MAP.get(r.feedback_class.removeprefix("class:"), "unknown"),
+    )
     log.info("  feedback text    : %s", r.feedback_text)
     if r.exception_type:
         log.info("  exception type   : %s", r.exception_type)
@@ -187,18 +234,26 @@ def _log_summary(results: list[CaseResult]) -> None:
     passed = sum(1 for r in results if r.matched_expectation)
     failed = len(results) - passed
     log.info("=" * 60)
-    log.info("SUMMARY: %d passed, %d failed out of %d cases", passed, failed, len(results))
+    log.info(
+        "SUMMARY: %d passed, %d failed out of %d cases", passed, failed, len(results)
+    )
     if failed:
         log.info("Failed cases:")
         for r in results:
             if not r.matched_expectation:
-                log.info("  - %s (expected: %s, got: %s)", r.case_id, r.expected_outcome, r.actual_outcome)
+                log.info(
+                    "  - %s (expected: %s, got: %s)",
+                    r.case_id,
+                    r.expected_outcome,
+                    r.actual_outcome,
+                )
     log.info("=" * 60)
 
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     """Run the headless test suite.

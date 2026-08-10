@@ -1,19 +1,22 @@
 """Terminal UI for calcolione using prompt_toolkit."""
 
 from __future__ import annotations
+
 from enum import Enum
-from pint.errors import UndefinedUnitError, DimensionalityError, OffsetUnitCalculusError
-from prompt_toolkit.buffer import Buffer
+
+from pint.errors import DimensionalityError, OffsetUnitCalculusError, UndefinedUnitError
 from prompt_toolkit.application import get_app
+from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.containers import HSplit, VSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
 from ..exercise.exercise import Exercise
-from ..utils import ALLOWED_SYMBOLS, get_logger, InvalidInputFormatError
+from ..utils import InvalidInputFormatError, get_logger
 from .base_ui import UI
 
 # Create the logger instance
 log = get_logger(__name__)
+
 
 class Feedback(Enum):
     HINT = 1
@@ -26,9 +29,11 @@ class Feedback(Enum):
     ERROR_UNEXPECTED = 8
     ERROR_INVALID_FORMAT = 9
 
+
 # ---------------------------------------------------------------------------
 # Exercise screen
 # ---------------------------------------------------------------------------
+
 
 class ExerciseUI(UI):
     """Exercise screen - displays a question and accepts the user's answer."""
@@ -44,6 +49,7 @@ class ExerciseUI(UI):
             "description": "Restart this exercise from scratch.",
         },
     }
+
     def __init__(self) -> None:
         # answer_buffer and question must exist before super().__init__()
         # because make_body (called by the base class) references them.
@@ -52,7 +58,6 @@ class ExerciseUI(UI):
 
         # Load an exercise and generate an initial navigation hint
         self.load_exercise_and_init_feedback()
-        
 
         super().__init__(screen_title="Exercise")
 
@@ -90,7 +95,7 @@ class ExerciseUI(UI):
             self.set_feedback(self.generate_feedback(Feedback.ERROR_ASSERTION))
         except InvalidInputFormatError:
             self.set_feedback(self.generate_feedback(Feedback.ERROR_INVALID_FORMAT))
-        except Exception as e:
+        except Exception:
             log.error(
                 "Unhandled exception in _handle_answer",
                 exc_info=True,
@@ -110,7 +115,7 @@ class ExerciseUI(UI):
 
         buf.reset()
         return False
-    
+
     def _help_content(self) -> list[tuple[str, str]]:
         """Return help text including exercise-specific sections.
 
@@ -123,7 +128,10 @@ class ExerciseUI(UI):
         lines += [
             ("class:hint", "   <number> <unit>       e.g. 5.833 km, 99 m, 3.5 m/s\n"),
             ("class:hint", "   Negative values        e.g. -5 m\n"),
-            ("class:hint", "   Unit-less              e.g. 9.8  (dimensionless answers)\n"),
+            (
+                "class:hint",
+                "   Unit-less              e.g. 9.8  (dimensionless answers)\n",
+            ),
         ]
         lines.append(("", "\n"))
 
@@ -177,7 +185,9 @@ class ExerciseUI(UI):
             wrap_lines=True,
         )
         answer_label = Window(
-            content=FormattedTextControl([("class:label", " Your answer (press Enter to submit):")]),
+            content=FormattedTextControl(
+                [("class:label", " Your answer (press Enter to submit):")]
+            ),
             height=1,
         )
         input_prefix = Window(
@@ -202,25 +212,30 @@ class ExerciseUI(UI):
             height=1,
         )
 
-        return HSplit([
-            question_label,
-            question_body,
-            answer_label,
-            input_row,
-            Window(height=1),
-            feedback_window,
-        ])
-        
+        return HSplit(
+            [
+                question_label,
+                question_body,
+                answer_label,
+                input_row,
+                Window(height=1),
+                feedback_window,
+            ]
+        )
+
     def run(self) -> None:
         self.app.run()
-    
+
     def load_exercise_and_init_feedback(self) -> None:
-        """Load an exercise from JSON and initialise the feedback to the hint state.
-        """
-        current_id = getattr(self, "exercise", None) and self.exercise.id if hasattr(self, "exercise") else None
+        """Load an exercise from JSON and initialise the feedback to the hint state."""
+        current_id = (
+            getattr(self, "exercise", None) and self.exercise.id
+            if hasattr(self, "exercise")
+            else None
+        )
         self.exercise = Exercise.get_exercise_from_json(exclude_id=current_id)
         self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))
-    
+
     def get_question(self) -> list[tuple[str, str]]:
         """Formats the `Exercise` question string with CSS.
 
@@ -228,7 +243,7 @@ class ExerciseUI(UI):
             list[tuple[str, str]]: The formatted question.
         """
         return [("class:question", f" {self.exercise.get_question()}")]
-    
+
     def get_feedback(self) -> list[tuple[str, str]]:
         """Getter for the feedback string.
 
@@ -236,8 +251,8 @@ class ExerciseUI(UI):
             list[tiple[str, str]]: The feedback as a formatted text fragment.
         """
         return self._feedback
-    
-    def set_feedback(self, feedback:list[tuple[str,str]]) -> None:
+
+    def set_feedback(self, feedback: list[tuple[str, str]]) -> None:
         """Setter for the feedback string.
 
         Args:
@@ -245,7 +260,7 @@ class ExerciseUI(UI):
         """
         self._feedback = feedback
 
-    def generate_feedback(self, feedback_type:Feedback) -> list[tuple[str, str]]:
+    def generate_feedback(self, feedback_type: Feedback) -> list[tuple[str, str]]:
         """Generates a feedback string according to the type of feedback provided.
 
         Args:
@@ -258,11 +273,13 @@ class ExerciseUI(UI):
             list[tuple[str, str]]: A font-formatted feedback string.
         """
         if feedback_type is Feedback.HINT:
-            feedback = [("class:hint", f" Enter your answer above.")]
+            feedback = [("class:hint", " Enter your answer above.")]
         elif feedback_type is Feedback.CORRECT:
-            feedback = [("class:correct", f" Correct! Type `:next` for the next exercise.")]
+            feedback = [
+                ("class:correct", " Correct! Type `:next` for the next exercise.")
+            ]
         elif feedback_type is Feedback.WRONG:
-            feedback = [("class:wrong", f" Wrong! Try again.")]
+            feedback = [("class:wrong", " Wrong! Try again.")]
         elif feedback_type is Feedback.ERROR_UNDEFINED_UNIT:
             feedback = [("class:error", " Unknown unit")]
         elif feedback_type is Feedback.ERROR_DIMENSIONALITY:
@@ -274,7 +291,12 @@ class ExerciseUI(UI):
         elif feedback_type is Feedback.ERROR_UNEXPECTED:
             feedback = [("class:error", " Unexpected error - see log")]
         elif feedback_type is Feedback.ERROR_INVALID_FORMAT:
-            feedback = [("class:error", " Invalid input format - expected a number followed by a unit")]
+            feedback = [
+                (
+                    "class:error",
+                    " Invalid input format - expected a number followed by a unit",
+                )
+            ]
         else:
             raise ValueError("Unknown Feedback type")
         return feedback

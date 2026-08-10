@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import json
-from pathlib import Path
 import random
+from pathlib import Path
 
 from typing_extensions import Self  # PEP 673
 
+from ..utils import EXERCISE_FILE
 from .answer import Answer
 from .question import Question
-from ..utils import EXERCISE_FILE
 
 
 class Exercise:
@@ -21,7 +22,9 @@ class Exercise:
         self.id = exercise_id
 
     @classmethod
-    def get_exercise_from_json(cls, exercise_file: Path = EXERCISE_FILE, exclude_id: str | None = None) -> Self:
+    def get_exercise_from_json(
+        cls, exercise_file: Path = EXERCISE_FILE, exclude_id: str | None = None
+    ) -> Self:
         """Read a random exercise from a JSON file.
 
         Args:
@@ -47,7 +50,9 @@ class Exercise:
 
         # TODO implement randomising values
         # TODO implement filtering by difficulty and category
-        candidates = [e for e in exercises if e["id"] != exclude_id] if exclude_id else exercises
+        candidates = (
+            [e for e in exercises if e["id"] != exclude_id] if exclude_id else exercises
+        )
         if not candidates:
             candidates = exercises  # fallback if only one exercise exists
         exercise = random.choice(candidates)
@@ -60,7 +65,7 @@ class Exercise:
 
     def get_question(self) -> str:
         """Returns the question body as a string.
-        
+
         Returns:
             str: The question body.
         """
@@ -68,7 +73,7 @@ class Exercise:
 
     def input_answer(self, answer: str) -> None:
         """Prompt the user for an answer.
-        
+
         Used by the UI layer, which owns input collection and format validation.
         The string is expected to have already passed ``ALLOWED_SYMBOLS`` validation.
 
