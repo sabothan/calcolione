@@ -4,9 +4,8 @@ import json
 import random
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self  # PEP 673
-
 if TYPE_CHECKING:
+    from typing_extensions import Self  # PEP 673
     from pathlib import Path
 
 from ..utils import EXERCISE_FILE
