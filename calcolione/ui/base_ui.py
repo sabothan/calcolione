@@ -1,48 +1,49 @@
 """Terminal UI for calcolione using prompt_toolkit."""
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
-from prompt_toolkit import PromptSession, Application
+from prompt_toolkit import Application, PromptSession
 from prompt_toolkit.application import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition, has_focus
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import Layout
+from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
+from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import ValidationError, Validator
-from prompt_toolkit.layout import Layout
-from prompt_toolkit.layout.containers import HSplit, Window, ConditionalContainer
-from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 
-from ..exercise.exercise import Exercise
 from ..utils import ALLOWED_SYMBOLS
-
 
 # ---------------------------------------------------------------------------
 # Style
 # ---------------------------------------------------------------------------
 
-STYLE = Style.from_dict({
-    "header":   "bg:#1e1e2e fg:#cdd6f4 bold",
-    "title":    "#89b4fa bold",
-    "body":     "bg:#1e1e2e",
-    "footer":   "bg:#1e1e2e fg:#6c7086",
-
-    "label":    "fg:#89b4fa bold",
-    "question": "fg:#cdd6f4",
-    "prompt":   "fg:#89dceb bold",
-    "hint":     "#6c7086",
-    "correct":  "fg:#40ff80 bold",   # bright lime green
-    "wrong":    "fg:#ff5555 bold",   # strong red
-    "warning":  "fg:#ffb86c bold",   # orange
-    "error":    "fg:#ff9500 bold",   # amber/orange, distinct from wrong
-    "dim":      "fg:#6c7086",
-})
+STYLE = Style.from_dict(
+    {
+        "header": "bg:#1e1e2e fg:#cdd6f4 bold",
+        "title": "#89b4fa bold",
+        "body": "bg:#1e1e2e",
+        "footer": "bg:#1e1e2e fg:#6c7086",
+        "label": "fg:#89b4fa bold",
+        "question": "fg:#cdd6f4",
+        "prompt": "fg:#89dceb bold",
+        "hint": "#6c7086",
+        "correct": "fg:#40ff80 bold",  # bright lime green
+        "wrong": "fg:#ff5555 bold",  # strong red
+        "warning": "fg:#ffb86c bold",  # orange
+        "error": "fg:#ff9500 bold",  # amber/orange, distinct from wrong
+        "dim": "fg:#6c7086",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
 # Input validator
 # ---------------------------------------------------------------------------
+
 
 class AnswerFormatValidator(Validator):
     """Rejects input that contains disallowed characters."""
@@ -59,16 +60,15 @@ class AnswerFormatValidator(Validator):
         text = document.text  # type: ignore[attr-defined]
         if text and not ALLOWED_SYMBOLS.match(text):
             raise ValidationError(
-                message="Invalid characters - use digits, units (km, m/s ...), +, -, *, /",
+                message="Invalid characters - use digits, units (m/s, ...), +, -, *, /",
                 cursor_position=len(text),
             )
-
-
 
 
 # ---------------------------------------------------------------------------
 # UI base class
 # ---------------------------------------------------------------------------
+
 
 class UI(ABC):
     """Abstract base class for all UI screens.
@@ -86,6 +86,7 @@ class UI(ABC):
            bindings are registered when the app starts.
         4. `Application` - constructed last, consuming the layout.
     """
+
     COMMANDS = {
         "quit": {
             "cmd": ["q", "quit"],
@@ -101,7 +102,7 @@ class UI(ABC):
         self._screen_title = screen_title
 
         # Helper variables for scrolling behaviour and visibility of the help window
-        self._help_visible : bool = False
+        self._help_visible: bool = False
         self._help_scroll: int = 0
 
         self._session: PromptSession = PromptSession(  # type: ignore[type-arg]
@@ -112,7 +113,7 @@ class UI(ABC):
         self.kb = KeyBindings()
 
         # None means "show hints"; any string means "show that feedback instead"
-        self._command_feedback : str | None = None
+        self._command_feedback: str | None = None
 
         # Layout, body, and command_buffer are built once and cached here.
         # Rebuilding them would discard the existing Window objects, causing
@@ -146,7 +147,7 @@ class UI(ABC):
     @screen_title.setter
     def screen_title(self, value: str) -> None:
         self._screen_title = value
-    
+
     @property
     @abstractmethod
     def _default_focus_target(self) -> Buffer:
@@ -159,6 +160,7 @@ class UI(ABC):
         Subclasses should call super()._register_keybindings() first,
         then add their own bindings to self.kb.
         """
+
         @self.kb.add(":")
         def enter_command_mode(event: object) -> None:
             """Shift focus to the command footer on `:`, vim-style."""
@@ -167,12 +169,12 @@ class UI(ABC):
             self.command_buffer.insert_text(":")
             # Focus on the command-window when entering command-mode
             event.app.layout.focus(self._command_window)  # type: ignore[attr-defined]
-        
+
         @self.kb.add("enter", filter=has_focus(self.command_buffer))
         def submit_command(event: object) -> None:
             # Trigger accept_handler, which dispatches the command and resets focus
             self.command_buffer.validate_and_handle()
-        
+
         @self.kb.add("escape", eager=True)
         def close_help(event: object) -> None:
             """Close the help screen on Escape."""
@@ -198,7 +200,9 @@ class UI(ABC):
         @self.kb.add("down", filter=Condition(lambda: self._help_visible))
         def scroll_help_down(event: object) -> None:
             output_rows = event.app.output.get_size().rows  # type: ignore[attr-defined]
-            chrome_lines = 7  # header + title + divider + spacer + divider + footer + command
+            chrome_lines = (
+                7  # header + title + divider + spacer + divider + footer + command
+            )
             visible_lines = output_rows - chrome_lines
             max_scroll = max(0, len(self._help_content()) - visible_lines)
             if self._help_scroll >= max_scroll:
@@ -207,7 +211,7 @@ class UI(ABC):
                 self._command_feedback = None
                 self._help_scroll = min(max_scroll, self._help_scroll + 1)
             event.app.invalidate()  # type: ignore[attr-defined]
-        
+
     def _handle_command(self, buf: Buffer) -> bool:
         """Dispatch a vim-style command entered in the command footer.
 
@@ -224,7 +228,7 @@ class UI(ABC):
             get_app().exit()
         elif cmd in self.COMMANDS["help"]["cmd"]:
             self._help_visible = not self._help_visible
-            self._help_scroll = 0 # Reset scroll position whenever help is toggled
+            self._help_scroll = 0  # Reset scroll position whenever help is toggled
             get_app().invalidate()
         else:
             self._command_feedback = f"Not a command/not implemented yet: {cmd}"
@@ -248,7 +252,7 @@ class UI(ABC):
         else:
             text = [("class:footer", " Type `:` to enter command mode. E.g. `:help`")]
         return text
-        
+
     def make_layout(self) -> Layout:
         """Assemble the full screen layout from shared chrome and the cached body.
 
@@ -256,7 +260,9 @@ class UI(ABC):
             Layout: The complete screen layout.
         """
         header = Window(
-            content=FormattedTextControl([("class:header", " calcolione - calculation trainer ")]),
+            content=FormattedTextControl(
+                [("class:header", " calcolione - calculation trainer ")]
+            ),
             height=1,
         )
         title = Window(
@@ -273,24 +279,26 @@ class UI(ABC):
             content=self.body,
             alternative_content=Window(
                 content=FormattedTextControl(
-                    lambda: self._help_content()[self._help_scroll:]
+                    lambda: self._help_content()[self._help_scroll :]
                 ),
                 wrap_lines=True,
             ),
             filter=Condition(lambda: not self._help_visible),
         )
 
-        root = HSplit([
-            header,
-            title,
-            divider,
-            Window(height=1),
-            body_or_help_window,
-            Window(),   # fills remaining vertical space
-            divider,
-            footer,
-            self._command_window,
-        ])
+        root = HSplit(
+            [
+                header,
+                title,
+                divider,
+                Window(height=1),
+                body_or_help_window,
+                Window(),  # fills remaining vertical space
+                divider,
+                footer,
+                self._command_window,
+            ]
+        )
 
         return Layout(root, focused_element=self._default_focus_target)
 
@@ -304,13 +312,13 @@ class UI(ABC):
             HSplit: The screen content.
         """
         ...
-    
+
     def _help_content(self) -> list[tuple[str, str]]:
         """Return formatted help text for this screen.
- 
+
         Renders the COMMANDS registry. Subclasses should call super() and
         extend with screen-specific sections.
- 
+
         Returns:
             list[tuple[str, str]]: Formatted text fragments for the help window.
         """
@@ -321,5 +329,5 @@ class UI(ABC):
             cmds = " / ".join(f":{c}" for c in entry["cmd"])
             lines.append(("class:hint", f"   {cmds:<20} {entry['description']}\n"))
         lines.append(("", "\n"))
-        #lines.append(("class:dim", " Press Escape to close\n"))
+        # lines.append(("class:dim", " Press Escape to close\n"))
         return lines

@@ -1,23 +1,25 @@
 from __future__ import annotations
-from typing_extensions import Self  # PEP 673
-import re
+
 from math import isclose
 
-from .qvar import QVar
+from typing_extensions import Self  # PEP 673
+
 from ..utils import (
     ANSWER_ABS_TOLERANCE,
     ANSWER_REL_TOLERANCE,
     NUMERIC_UNIT_PATTERN,
-    ALLOWED_SYMBOLS,
-    substitute_placeholders,
     InvalidInputFormatError,
+    substitute_placeholders,
 )
+from .qvar import QVar
 
 
 class Answer:
     """Represents an answer object."""
 
-    def __init__(self, answer_type: str, calculation: str, result: QVar, vars: list[QVar]):
+    def __init__(
+        self, answer_type: str, calculation: str, result: QVar, vars: list[QVar]
+    ):
         self._answer_type = answer_type
         self._calculation = calculation
         self.vars = vars
@@ -34,6 +36,7 @@ class Answer:
 
         Args:
             answer (dict): the input dictionary
+            vars (dict): the input variables
 
         Returns:
             Answer: The instantiated class.
@@ -42,10 +45,19 @@ class Answer:
             answer_type=answer["answer_type"],
             calculation=answer["calculation"],
             result=QVar.from_dict(answer["result"]),
-            vars=[QVar.from_dict(var) for var in vars]
+            vars=[QVar.from_dict(var) for var in vars],
         )
-    
-    def _calculate_answer(self, result: QVar):
+
+    def _calculate_answer(self, result: QVar) -> QVar:
+        """Converts the template solution into a calculation and
+        computes the correct answer from it.
+
+        Args:
+            result (QVar): _description_
+
+        Returns:
+            _type_: _description_
+        """
         parsed_calculation = substitute_placeholders(
             vars=self.vars,
             body=self._calculation,
@@ -57,7 +69,7 @@ class Answer:
             description=result.description,
             quantity_type=result.quantity_type,
         )._convert_to_si_units()
-        
+
     def _input_answer(self, answer: str) -> None:
         """Parse and store an answer from a pre-validated string.
 
@@ -96,7 +108,7 @@ class Answer:
         else:
             raise ValueError(f"Unknown answer type: '{self._answer_type}'")
 
-        return parsed_answer
+        return parsed_answer  # type: ignore
 
     def _parse_numeric(self, answer: str) -> QVar:
         """Parses a numeric answer string into a value and an optional unit.
@@ -118,7 +130,9 @@ class Answer:
 
         # Handle incompatible anwers
         if not match:
-            raise InvalidInputFormatError(f"Expected a number followed by a unit, got: {answer!r}")
+            raise InvalidInputFormatError(
+                f"Expected a number followed by a unit, got: {answer!r}"
+            )
 
         # Convert the input string into a QVar
         parsed_answer = QVar(
@@ -130,7 +144,7 @@ class Answer:
 
         return parsed_answer
 
-    def _parse_expression(self, answer: str):
+    def _parse_expression(self, answer: str) -> None:
         """Parses a scientific expression into a value with optional units.
 
         Args:

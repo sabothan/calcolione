@@ -39,6 +39,7 @@ calcolione = "calcolione:main.main"
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+exclude = ["scripts", "example"]
 
 [tool.ruff.lint]
 select = [
@@ -61,6 +62,8 @@ ignore = [
     "D107",     # missing docstring in __init__ — document on class instead
     "D205",     # docstring summary lines that are not separated from the docstring description by one blank line
     "ANN204",   # issing return type annotation for special methods (e.g. __init__, __new__, __call__)
+    "E501",     # line too long
+    "ANN401",   # Dynamically typed expressions (typing.Any) are disallowed in `wrapper`. Return type varies by wrapped dunder
 ]
 
 [tool.ruff.lint.pydocstyle]
