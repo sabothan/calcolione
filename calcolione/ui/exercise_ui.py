@@ -228,11 +228,7 @@ class ExerciseUI(UI):
 
     def load_exercise_and_init_feedback(self) -> None:
         """Load an exercise from JSON and initialise the feedback to the hint state."""
-        current_id = (
-            getattr(self, "exercise", None) and self.exercise.id
-            if hasattr(self, "exercise")
-            else None
-        )
+        current_id = self.exercise.id if hasattr(self, "exercise") else None
         self.exercise = Exercise.get_exercise_from_json(exclude_id=current_id)
         self.set_feedback(feedback=self.generate_feedback(Feedback.HINT))
 
