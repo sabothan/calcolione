@@ -36,6 +36,7 @@ class Answer:
 
         Args:
             answer (dict): the input dictionary
+            vars (dict): the input variables
 
         Returns:
             Answer: The instantiated class.
@@ -48,6 +49,15 @@ class Answer:
         )
 
     def _calculate_answer(self, result: QVar):
+        """Converts the template solution into a calculation and 
+        computes the correct answer from it.
+
+        Args:
+            result (QVar): _description_
+
+        Returns:
+            _type_: _description_
+        """
         parsed_calculation = substitute_placeholders(
             vars=self.vars,
             body=self._calculation,
@@ -98,7 +108,7 @@ class Answer:
         else:
             raise ValueError(f"Unknown answer type: '{self._answer_type}'")
 
-        return parsed_answer
+        return parsed_answer # type: ignore
 
     def _parse_numeric(self, answer: str) -> QVar:
         """Parses a numeric answer string into a value and an optional unit.
@@ -134,7 +144,7 @@ class Answer:
 
         return parsed_answer
 
-    def _parse_expression(self, answer: str):
+    def _parse_expression(self, answer: str) -> None:
         """Parses a scientific expression into a value with optional units.
 
         Args:
