@@ -50,7 +50,7 @@ class Exercise:
         candidates = [e for e in exercises if e["id"] != exclude_id] if exclude_id else exercises
         if not candidates:
             candidates = exercises  # fallback if only one exercise exists
-        exercise = random.choice(exercises)
+        exercise = random.choice(candidates)
 
         return cls(
             question=Question.from_dict(exercise["question"], vars=exercise["vars"]),
